@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>FSGF en chiffres - Statistiques</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">FSGF en chiffres</div>
+  <nav class="menu">
+    <a href="index.html">Accueil</a>
+    <a href="statistiques.html">Statistiques</a>
+    <a href="comparaisons.html">Comparaisons</a>
+    <a href="admin.html">Admin</a>
+  </nav>
+</header>
+
+<main>
+  <h1>Statistiques détaillées</h1>
+
+  <!-- Filtres -->
+  <div class="filters">
+    <select id="filterAnnee"><option value="">Toutes les années</option></select>
+    <select id="filterDepartement"><option value="">Tous les départements</option></select>
+    <select id="filterNiveau"><option value="">Tous les niveaux</option></select>
+    <select id="filterFiliere"><option value="">Toutes les filières</option></select>
+    <select id="filterGenre"><option value="">Tous les genres</option></select>
+    <button id="exportBtn">Exporter en Excel</button>
+  </div>
+
+  <!-- Tableau -->
+  <table id="tableStats">
+    <thead>
+      <tr>
+        <th>Année</th>
+        <th>Département</th>
+        <th>Niveau</th>
+        <th>Filière</th>
+        <th>Genre</th>
+        <th>Effectifs</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</main>
+
+<footer>
+  © 2026 FSGF en chiffres
+</footer>
+
+<script src="js/data.js"></script>
+<script>
+  let allData = [];
+
+  // Fonction pour remplir filtres
+  function populateFilters(data) {
+    const selectAnnee = document.getElementById("filterAnnee");
+    const selectDept = document.getElementById("filterDepartement");
+    const selectNiveau = document.getElementById("filterNiveau");
+    const selectFiliere = document.getElementById("filterFiliere");
+    const selectGenre = document.getElementById("filterGenre");
+
+    const unique = (arr, key) => [...new Set(arr.map(d => d[key]))];
+
+    unique(data,"Année").forEach(val => {selectAnnee.innerHTML += `<option value="${val}">${val}</option>`});
+    unique(data,"Département").forEach(val => {selectDept.innerHTML += `<option value="${val}">${val}</option>`});
+    unique(data,"Niveau").forEach(val => {selectNiveau.innerHTML += `<option value="${val}">${val}</option>`});
+    unique(data,"Filière").forEach(val => {selectFiliere.innerHTML += `<option value="${val}">${val}</option>`});
+    unique(data,"Genre").forEach(val => {selectGenre.innerHTML += `<option value="${val}">${val}</option>`});
+  }
+
+  // Fonction pour afficher tableau filtré
+  function displayTable(data) {
+    const tbody = document.querySelector("#tableStats tbody");
+    tbody.innerHTML = "";
+    data.forEach(d=>{
+      tbody.innerHTML += `<tr>
+        <td>${d.Année}</td>
+        <td>${d.Département}</td>
+        <td>${d.Niveau}</td>
+        <td>${d.Filière}</td>
+        <td>${d.Genre}</td>
+        <td>${d.Effectifs}</td>
+      </tr>`;
+    });
+  }
+
+  // Filtrage
+  function applyFilters() {
+    let filtered = allData;
+    const fAnnee = document.getElementById("filterAnnee").value;
+    const fDept = document.getElementById("filterDepartement").value;
+    const fNiveau = document.getElementById("filterNiveau").value;
+    const fFiliere = document.getElementById("filterFiliere").value;
+    const fGenre = document.getElementById("filterGenre").value;
+
+    if(fAnnee) filtered = filtered.filter(d=>d.Année==fAnnee);
+    if(fDept) filtered = filtered.filter(d=>d.Département==fDept);
+    if(fNiveau) filtered = filtered.filter(d=>d.Niveau==fNiveau);
+    if(fFiliere) filtered = filtered.filter(d=>d.Filière==fFiliere);
+    if(fGenre) filtered = filtered.filter(d=>d.Genre==fGenre);
+
+    displayTable(filtered);
+  }
+
+  // Export Excel
+  document.getElementById("exportBtn").addEventListener("click", ()=>{
+    const ws = XLSX.utils.json_to_sheet(allData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Donnees");
+    XLSX.writeFile(wb, "fsgf_export.xlsx");
+  });
+
+  document.addEventListener("DOMContentLoaded", ()=>{
+    fetch("data/fsgf.xlsx")
+      .then(res=>res.arrayBuffer())
+      .then(buffer=>{
+        const workbook = XLSX.read(buffer, {type:"array"});
+        const sheet = workbook.Sheets["Donnees"];
+        allData = XLSX.utils.sheet_to_json(sheet);
+
+        populateFilters(allData);
+        displayTable(allData);
+
+        document.querySelectorAll(".filters select").forEach(sel=>{
+          sel.addEventListener("change", applyFilters);
+        });
+      });
+  });
+</script>
+
+</body>
+</html>
