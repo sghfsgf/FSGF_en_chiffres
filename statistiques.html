@@ -19,117 +19,132 @@
 </header>
 
 <main>
-  <h1>Statistiques détaillées</h1>
+  <h1>Statistiques des étudiants</h1>
 
-  <!-- Filtres -->
-  <div class="filters">
-    <select id="filterAnnee"><option value="">Toutes les années</option></select>
-    <select id="filterDepartement"><option value="">Tous les départements</option></select>
-    <select id="filterNiveau"><option value="">Tous les niveaux</option></select>
-    <select id="filterFiliere"><option value="">Toutes les filières</option></select>
-    <select id="filterGenre"><option value="">Tous les genres</option></select>
-    <button id="exportBtn">Exporter en Excel</button>
-  </div>
+  <!-- Section Filtres -->
+  <section>
+    <h2>Filtres</h2>
+    <form id="filterForm">
+      <label for="annee">Année :</label>
+      <select id="annee"></select>
 
-  <!-- Tableau -->
-  <table id="tableStats">
-    <thead>
-      <tr>
-        <th>Année</th>
-        <th>Département</th>
-        <th>Niveau</th>
-        <th>Filière</th>
-        <th>Genre</th>
-        <th>Effectifs</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+      <label for="departement">Département :</label>
+      <select id="departement"></select>
+
+      <label for="niveau">Niveau :</label>
+      <select id="niveau"></select>
+
+      <label for="genre">Genre :</label>
+      <select id="genre">
+        <option value="">Tous</option>
+        <option value="M">Masculin</option>
+        <option value="F">Féminin</option>
+      </select>
+
+      <button type="button" id="applyFilter">Afficher</button>
+    </form>
+  </section>
+
+  <!-- Section Tableau -->
+  <section>
+    <h2>Résultats filtrés</h2>
+    <table id="statsTable">
+      <thead>
+        <tr>
+          <th>Année</th>
+          <th>Département</th>
+          <th>Niveau</th>
+          <th>Filière</th>
+          <th>Genre</th>
+          <th>Effectifs</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button id="exportFiltered">Exporter le résultat</button>
+  </section>
 </main>
 
 <footer>
   © 2026 FSGF en chiffres
 </footer>
 
-<script src="js/data.js"></script>
 <script>
-  let allData = [];
+let statsData = [];
 
-  // Fonction pour remplir filtres
-  function populateFilters(data) {
-    const selectAnnee = document.getElementById("filterAnnee");
-    const selectDept = document.getElementById("filterDepartement");
-    const selectNiveau = document.getElementById("filterNiveau");
-    const selectFiliere = document.getElementById("filterFiliere");
-    const selectGenre = document.getElementById("filterGenre");
-
-    const unique = (arr, key) => [...new Set(arr.map(d => d[key]))];
-
-    unique(data,"Année").forEach(val => {selectAnnee.innerHTML += `<option value="${val}">${val}</option>`});
-    unique(data,"Département").forEach(val => {selectDept.innerHTML += `<option value="${val}">${val}</option>`});
-    unique(data,"Niveau").forEach(val => {selectNiveau.innerHTML += `<option value="${val}">${val}</option>`});
-    unique(data,"Filière").forEach(val => {selectFiliere.innerHTML += `<option value="${val}">${val}</option>`});
-    unique(data,"Genre").forEach(val => {selectGenre.innerHTML += `<option value="${val}">${val}</option>`});
-  }
-
-  // Fonction pour afficher tableau filtré
-  function displayTable(data) {
-    const tbody = document.querySelector("#tableStats tbody");
-    tbody.innerHTML = "";
-    data.forEach(d=>{
-      tbody.innerHTML += `<tr>
-        <td>${d.Année}</td>
-        <td>${d.Département}</td>
-        <td>${d.Niveau}</td>
-        <td>${d.Filière}</td>
-        <td>${d.Genre}</td>
-        <td>${d.Effectifs}</td>
-      </tr>`;
-    });
-  }
-
-  // Filtrage
-  function applyFilters() {
-    let filtered = allData;
-    const fAnnee = document.getElementById("filterAnnee").value;
-    const fDept = document.getElementById("filterDepartement").value;
-    const fNiveau = document.getElementById("filterNiveau").value;
-    const fFiliere = document.getElementById("filterFiliere").value;
-    const fGenre = document.getElementById("filterGenre").value;
-
-    if(fAnnee) filtered = filtered.filter(d=>d.Année==fAnnee);
-    if(fDept) filtered = filtered.filter(d=>d.Département==fDept);
-    if(fNiveau) filtered = filtered.filter(d=>d.Niveau==fNiveau);
-    if(fFiliere) filtered = filtered.filter(d=>d.Filière==fFiliere);
-    if(fGenre) filtered = filtered.filter(d=>d.Genre==fGenre);
-
-    displayTable(filtered);
-  }
-
-  // Export Excel
-  document.getElementById("exportBtn").addEventListener("click", ()=>{
-    const ws = XLSX.utils.json_to_sheet(allData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Donnees");
-    XLSX.writeFile(wb, "fsgf_export.xlsx");
+// Charger le fichier Excel
+fetch('data/fsgf.xlsx')
+  .then(res => res.arrayBuffer())
+  .then(data => {
+    const workbook = XLSX.read(data, { type: "array" });
+    const sheet = workbook.Sheets["Donnees"];
+    statsData = XLSX.utils.sheet_to_json(sheet);
+    populateFilters(statsData);
   });
 
-  document.addEventListener("DOMContentLoaded", ()=>{
-    fetch("data/fsgf.xlsx")
-      .then(res=>res.arrayBuffer())
-      .then(buffer=>{
-        const workbook = XLSX.read(buffer, {type:"array"});
-        const sheet = workbook.Sheets["Donnees"];
-        allData = XLSX.utils.sheet_to_json(sheet);
+// Remplir les filtres dynamiquement
+function populateFilters(data) {
+  const anneeSet = [...new Set(data.map(d => d.Année))];
+  const deptSet = [...new Set(data.map(d => d.Département))];
+  const niveauSet = [...new Set(data.map(d => d.Niveau))];
 
-        populateFilters(allData);
-        displayTable(allData);
+  document.getElementById("annee").innerHTML = '<option value="">Tous</option>' + anneeSet.map(a=>`<option value="${a}">${a}</option>`).join('');
+  document.getElementById("departement").innerHTML = '<option value="">Tous</option>' + deptSet.map(d=>`<option value="${d}">${d}</option>`).join('');
+  document.getElementById("niveau").innerHTML = '<option value="">Tous</option>' + niveauSet.map(n=>`<option value="${n}">${n}</option>`).join('');
+}
 
-        document.querySelectorAll(".filters select").forEach(sel=>{
-          sel.addEventListener("change", applyFilters);
-        });
-      });
+// Appliquer les filtres et afficher le tableau
+document.getElementById("applyFilter").addEventListener("click", ()=>{
+  const annee = document.getElementById("annee").value;
+  const dept = document.getElementById("departement").value;
+  const niveau = document.getElementById("niveau").value;
+  const genre = document.getElementById("genre").value;
+
+  let filtered = statsData.filter(d=>{
+    return (annee === "" || d.Année == annee) &&
+           (dept === "" || d.Département == dept) &&
+           (niveau === "" || d.Niveau == niveau) &&
+           (genre === "" || d.Genre == genre);
   });
+
+  displayStatsTable(filtered);
+});
+
+// Afficher le tableau filtré
+function displayStatsTable(data){
+  const tbody = document.querySelector("#statsTable tbody");
+  tbody.innerHTML = "";
+  data.forEach(d=>{
+    tbody.innerHTML += `<tr>
+      <td>${d.Année}</td>
+      <td>${d.Département}</td>
+      <td>${d.Niveau}</td>
+      <td>${d.Filière}</td>
+      <td>${d.Genre}</td>
+      <td>${d.Effectifs}</td>
+    </tr>`;
+  });
+}
+
+// Exporter les résultats filtrés en Excel
+document.getElementById("exportFiltered").addEventListener("click", ()=>{
+  const tbody = document.querySelector("#statsTable tbody");
+  if(tbody.rows.length === 0){ alert("Aucune donnée à exporter"); return; }
+
+  const data = Array.from(tbody.rows).map(row => ({
+    Année: row.cells[0].textContent,
+    Département: row.cells[1].textContent,
+    Niveau: row.cells[2].textContent,
+    Filière: row.cells[3].textContent,
+    Genre: row.cells[4].textContent,
+    Effectifs: row.cells[5].textContent
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Filtré");
+  XLSX.writeFile(wb, "fsgf_filtre.xlsx");
+});
 </script>
 
 </body>
