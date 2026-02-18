@@ -238,28 +238,34 @@ footer {
 /* ===== PAGE STATISTIQUES ===== */
 #selection {
   display: flex;
-  flex-direction: column;  /* empile les champs verticalement */
-  gap: 12px;
-  max-width: 320px;
-  margin-bottom: 20px;
+  flex-direction: column;       /* empile les champs verticalement */
+  gap: 12px;                    /* espace entre les champs */
+  max-width: 350px;             /* largeur raisonnable */
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-bottom: 25px;
 }
 
 #selection h2 {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   color: #ff6b00;
+  font-size: 1.4em;
 }
 
 #selection label {
   font-weight: 600;
   font-size: 1rem;
+  margin-bottom: 5px;
   color: #333;
 }
 
 #selection select {
   padding: 8px 12px;
+  font-size: 1rem;
   border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 1rem;
   font-family: inherit;
 }
 
@@ -273,22 +279,52 @@ footer {
   transition: 0.3s;
 }
 
-#afficherBtn {
+#applySelection {
   background-color: #28a745;
   color: #fff;
 }
 
-#afficherBtn:hover {
+#applySelection:hover {
   background-color: #218838;
 }
 
-#exportBtn {
+#exportExcel {
   background-color: #007bff;
   color: #fff;
+  margin-top: 10px;
 }
 
-#exportBtn:hover {
+#exportExcel:hover {
   background-color: #0056b3;
+}
+
+/* Tableau résultats */
+#resultats table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+#resultats table th, #resultats table td {
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+#resultats table th {
+  background-color: #ff6b00;
+  color: white;
+}
+
+#resultats table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+#resultats table button {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  cursor: pointer;
 }
 
 /* Responsive */
@@ -296,5 +332,9 @@ footer {
   #selection {
     max-width: 100%;
   }
-}
 
+  #selection select,
+  #selection button {
+    font-size: 0.95em;
+  }
+}
