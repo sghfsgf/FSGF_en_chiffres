@@ -58,6 +58,11 @@
 
 </main>
 
+<!-- ===== FOOTER ===== -->
+<footer>
+  © 2026 FSGF en chiffres
+</footer>
+
 <!-- ===== SCRIPTS ===== -->
 <script src="js/data.js"></script>
 <script src="js/charts.js"></script>
@@ -74,7 +79,7 @@ function updateCards(data) {
   document.querySelector("#totalFeminin p").textContent = totalF;
 }
 
-// Mettre à jour après lecture du fichier Excel
+// Charger les données Excel et mettre à jour dashboard
 document.addEventListener("DOMContentLoaded", ()=>{
   fetch("data/fsgf.xlsx")
     .then(res=>res.arrayBuffer())
@@ -83,17 +88,15 @@ document.addEventListener("DOMContentLoaded", ()=>{
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       const allData = XLSX.utils.sheet_to_json(sheet);
 
-      // Mettre à jour les cartes
-      updateCards(allData);
-
-      // Créer graphiques dynamiques
-      creerGraphiques(allData); // fonction dans charts.js
+      updateCards(allData);        // cartes synthétiques
+      creerGraphiques(allData);    // graphiques dynamiques (dans charts.js)
     });
 });
 </script>
 <footer>
-   2026 © FSGF en chiffres
+  © 2026 FSGF en chiffres
 </footer>
 
 </body>
 </html>
+
