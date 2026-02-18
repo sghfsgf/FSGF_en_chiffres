@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>FSGF en chiffres - Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<script>
+// 🔒 Mot de passe Admin
+const password = "FSGF2026"; // à changer si nécessaire
+let userPass = prompt("Mot de passe Admin :");
+if(userPass !== password){
+  alert("Accès refusé !");
+  window.location.href = "index.html"; // redirige vers Accueil
+}
+</script>
+
+<header class="topbar">
+  <div class="logo">FSGF en chiffres - Admin</div>
+  <nav class="menu">
+    <a href="index.html">Accueil</a>
+    <a href="statistiques.html">Statistiques</a>
+    <a href="comparaisons.html">Comparaisons</a>
+    <a href="admin.html">Admin</a>
+  </nav>
+</header>
+
+<main>
+  <h1>Administration</h1>
+
+  <!-- Section 1 : Upload Excel -->
+  <section>
+    <h2>Mettre à jour les données</h2>
+    <input type="file" id="uploadExcel" accept=".xlsx">
+    <button id="btnUpload">Charger le fichier</button>
+    <p id="uploadStatus"></p>
+  </section>
+
+  <!-- Section 2 : Tableau central Admin -->
+  <section>
+    <h2>Tableau central (Réservé Admin)</h2>
+    <table id="adminTable">
+      <thead>
+        <tr>
+          <th>Année</th>
+          <th>Département</th>
+          <th>Niveau</th>
+          <th>Filière</th>
+          <th>Genre</th>
+          <th>Effectifs</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button id="exportAdmin">Exporter en Excel</button>
+  </section>
+</main>
+
+<footer>
+  © 2026 FSGF en chiffres
+</footer>
+
+<script>
+let adminData = [];
+
+// Afficher le tableau Admin
+function displayAdminTable(data){
+  const tbody = document.querySelector("#adminTable tbody");
+  tbody.innerHTML = "";
+  data.forEach(d=>{
+    tbody.innerHTML += `<tr>
+      <td>${d.Année}</td>
+      <td>${d.Département}</td>
+      <td>${d.Niveau}</td>
+      <td>${d.Filière}</td>
+      <td>${d.Genre}</td>
+      <td>${d.Effectifs}</td>
+    </tr>`;
+  });
+}
+
+// Charger le fichier Excel Admin
+document.getElementById("btnUpload").addEventListener("click", ()=>{
+  const fileInput = document.getElementById("uploadExcel");
+  const file = fileInput.files[0];
+  if(!file){ alert("Sélectionnez un fichier Excel"); return; }
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, {type:"array"});
+    const sheet = workbook.Sheets["Donnees"];
+    if(!sheet){ alert("Feuille 'Donnees' introuvable"); return; }
+
+    adminData = XLSX.utils.sheet_to_json(sheet);
+    displayAdminTable(adminData);
+    document.getElementById("uploadStatus").textContent = "Fichier chargé avec succès !";
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+// Export Excel Admin
+document.getElementById("exportAdmin").addEventListener("click", ()=>{
+  if(adminData.length === 0){ alert("Aucune donnée à exporter"); return; }
+  const ws = XLSX.utils.json_to_sheet(adminData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Donnees");
+  XLSX.writeFile(wb, "fsgf_admin.xlsx");
+});
+</script>
+
+</body>
+</html>
