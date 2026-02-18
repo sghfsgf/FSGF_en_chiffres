@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>FSGF en chiffres - Accueil</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- ===== HEADER / MENU ===== -->
+<header class="topbar">
+  <div class="logo">FSGF en chiffres</div>
+  <nav class="menu">
+    <a href="index.html">Accueil</a>
+    <a href="statistiques.html">Statistiques</a>
+    <a href="comparaisons.html">Comparaisons</a>
+    <a href="admin.html">Admin</a>
+  </nav>
+</header>
+
+<!-- ===== MAIN DASHBOARD ===== -->
+<main>
+  <h1>Tableau de bord - Vue générale</h1>
+
+  <!-- Cartes synthétiques -->
+  <div class="cards">
+    <div class="card" id="totalEtudiants">
+      <h2>Total Étudiants</h2>
+      <p>0</p>
+    </div>
+    <div class="card" id="totalMasculin">
+      <h2>Masculin</h2>
+      <p>0</p>
+    </div>
+    <div class="card" id="totalFeminin">
+      <h2>Féminin</h2>
+      <p>0</p>
+    </div>
+  </div>
+
+  <!-- Graphiques synthétiques -->
+  <section>
+    <h2>Effectifs par Année</h2>
+    <canvas id="chartAnnee"></canvas>
+  </section>
+
+  <section>
+    <h2>Effectifs par Département</h2>
+    <canvas id="chartDept"></canvas>
+  </section>
+
+  <section>
+    <h2>Répartition par Genre</h2>
+    <canvas id="chartGenre"></canvas>
+  </section>
+
+</main>
+
+<!-- ===== SCRIPTS ===== -->
+<script src="js/data.js"></script>
+<script src="js/charts.js"></script>
+
+<script>
+// Mettre à jour les cartes synthétiques
+function updateCards(data) {
+  const total = data.reduce((acc,d)=>acc+d.Effectifs,0);
+  const totalM = data.filter(d=>d.Genre==="M").reduce((acc,d)=>acc+d.Effectifs,0);
+  const totalF = data.filter(d=>d.Genre==="F").reduce((acc,d)=>acc+d.Effectifs,0);
+
+  document.querySelector("#totalEtudiants p").textContent = total;
+  document.querySelector("#totalMasculin p").textContent = totalM;
+  document.querySelector("#totalFeminin p").textContent = totalF;
+}
+
+// Mettre à jour après lecture du fichier Excel
+document.addEventListener("DOMContentLoaded", ()=>{
+  fetch("data/fsgf.xlsx")
+    .then(res=>res.arrayBuffer())
+    .then(buffer=>{
+      const workbook = XLSX.read(buffer, { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const allData = XLSX.utils.sheet_to_json(sheet);
+
+      // Mettre à jour les cartes
+      updateCards(allData);
+
+      // Créer graphiques dynamiques
+      creerGraphiques(allData); // fonction dans charts.js
+    });
+});
+</script>
+
+</body>
+</html>
