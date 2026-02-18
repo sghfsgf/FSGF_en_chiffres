@@ -7,7 +7,6 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
 
 <header class="topbar">
@@ -23,55 +22,111 @@
 <main>
   <h1>Comparaisons</h1>
 
-  <!-- Comparaison par Année -->
-  <section>
-    <h2>Comparaison par Année</h2>
-    <canvas id="compareAnnee"></canvas>
-  </section>
+  <!-- Filtre Année -->
+  <label for="yearFilter">Sélectionner une année :</label>
+  <select id="yearFilter"></select>
 
-  <!-- Comparaison par Département -->
-  <section>
-    <h2>Comparaison par Département</h2>
-    <canvas id="compareDept"></canvas>
+  <!-- Graphiques -->
+  <section style="display:flex; flex-wrap: wrap; gap:20px; margin-top:20px;">
+    <!-- Comparaison par Département -->
+    <div style="flex:1; min-width:300px;">
+      <canvas id="deptChart"></canvas>
+    </div>
+    <!-- Comparaison par Niveau -->
+    <div style="flex:1; min-width:300px;">
+      <canvas id="niveauChart"></canvas>
+    </div>
+    <!-- Comparaison par Genre -->
+    <div style="flex:1; min-width:300px;">
+      <canvas id="genreChart"></canvas>
+    </div>
   </section>
-
 </main>
 
 <footer>
   © 2026 FSGF en chiffres
 </footer>
 
-<script src="js/data.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  fetch("data/fsgf.xlsx")
-    .then(res => res.arrayBuffer())
-    .then(buffer => {
-      const workbook = XLSX.read(buffer, { type: "array" });
-      const sheet = workbook.Sheets["Donnees"];
-      const allData = XLSX.utils.sheet_to_json(sheet);
+let statsData = [];
 
-      // Comparaison par Année
-      const labelsAnnee = [...new Set(allData.map(d => d.Année))];
-      const valuesAnnee = labelsAnnee.map(annee =>
-        allData.filter(d=>d.Année===annee).reduce((acc,d)=>acc+d.Effectifs,0)
-      );
-      new Chart(document.getElementById("compareAnnee"), {
-        type:'bar',
-        data:{labels:labelsAnnee, datasets:[{label:"Effectifs par Année", data:valuesAnnee, backgroundColor:"#ff6600"}]}
-      });
+// Charger Excel
+fetch('data/fsgf.xlsx')
+  .then(res => res.arrayBuffer())
+  .then(data => {
+    const workbook = XLSX.read(data, { type: "array" });
+    const sheet = workbook.Sheets["Donnees"];
+    statsData = XLSX.utils.sheet_to_json(sheet);
 
-      // Comparaison par Département
-      const labelsDept = [...new Set(allData.map(d=>d.Département))];
-      const valuesDept = labelsDept.map(dep =>
-        allData.filter(d=>d.Département===dep).reduce((acc,d)=>acc+d.Effectifs,0)
-      );
-      new Chart(document.getElementById("compareDept"), {
-        type:'bar',
-        data:{labels:labelsDept, datasets:[{label:"Effectifs par Département", data:valuesDept, backgroundColor:"#9c88ff"}]}
-      });
-    });
+    // Remplir le select Année
+    const years = [...new Set(statsData.map(d => d.Année))].sort((a,b) => b-a);
+    const yearFilter = document.getElementById("yearFilter");
+    years.forEach(y => yearFilter.innerHTML += `<option value="${y}">${y}</option>`);
+
+    // Afficher graphiques pour l'année par défaut (dernière année)
+    updateCharts(years[0]);
+  });
+
+// Événement changement année
+document.getElementById("yearFilter").addEventListener("change", function() {
+  updateCharts(this.value);
 });
+
+// Fonction pour mettre à jour les graphiques
+function updateCharts(selectedYear){
+  const currentYearData = statsData.filter(d => d.Année == selectedYear);
+
+  // ----- Comparaison par Département -----
+  const deptTotals = {};
+  currentYearData.forEach(d => {
+    if(!deptTotals[d.Département]) deptTotals[d.Département] = 0;
+    deptTotals[d.Département] += Number(d.Effectifs);
+  });
+  const deptLabels = Object.keys(deptTotals);
+  const deptData = Object.values(deptTotals);
+  const deptCtx = document.getElementById("deptChart").getContext("2d");
+  if(window.deptChartObj) window.deptChartObj.destroy();
+  window.deptChartObj = new Chart(deptCtx, {
+    type: 'bar',
+    data: { labels: deptLabels, datasets:[{label:'Département', data:deptData, backgroundColor:'#1f77b4'}] },
+    options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
+  });
+
+  // ----- Comparaison par Niveau -----
+  const niveauTotals = {};
+  currentYearData.forEach(d => {
+    if(!niveauTotals[d.Niveau]) niveauTotals[d.Niveau] = 0;
+    niveauTotals[d.Niveau] += Number(d.Effectifs);
+  });
+  const niveauLabels = Object.keys(niveauTotals);
+  const niveauData = Object.values(niveauTotals);
+  const niveauCtx = document.getElementById("niveauChart").getContext("2d");
+  if(window.niveauChartObj) window.niveauChartObj.destroy();
+  window.niveauChartObj = new Chart(niveauCtx,{
+    type:'pie',
+    data:{ 
+      labels:niveauLabels, 
+      datasets:[{label:'Niveau', data:niveauData, backgroundColor:['#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b']}] 
+    },
+    options:{responsive:true}
+  });
+
+  // ----- Comparaison par Genre -----
+  const genreTotals = {M:0,F:0};
+  currentYearData.forEach(d=>{
+    if(d.Genre=="M") genreTotals.M += Number(d.Effectifs);
+    else if(d.Genre=="F") genreTotals.F += Number(d.Effectifs);
+  });
+  const genreLabels = ["Masculin","Féminin"];
+  const genreData = [genreTotals.M, genreTotals.F];
+  const genreCtx = document.getElementById("genreChart").getContext("2d");
+  if(window.genreChartObj) window.genreChartObj.destroy();
+  window.genreChartObj = new Chart(genreCtx,{
+    type:'pie',
+    data:{ labels:genreLabels, datasets:[{label:'Genre', data:genreData, backgroundColor:['#1e90ff','#ff1493']}] },
+    options:{responsive:true}
+  });
+}
 </script>
 
 </body>
