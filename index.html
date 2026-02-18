@@ -151,7 +151,7 @@ function updateCharts(currentYearData){
       datasets: [{
         label: 'Étudiants par Département',
         data: deptData,
-        backgroundColor: '#ff7f50'
+        backgroundColor: '#ff7f50' // bar chart orange
       }]
     },
     options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
@@ -173,7 +173,8 @@ function updateCharts(currentYearData){
       datasets: [{
         label: 'Étudiants par Niveau',
         data: niveauData,
-        backgroundColor: ['#ff7f50','#ffa07a','#ff6347','#ff4500','#ff8c00']
+        backgroundColor: ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd'] 
+        // couleurs distinctes pour chaque niveau
       }]
     },
     options: { responsive: true }
@@ -195,7 +196,7 @@ function updateCharts(currentYearData){
       datasets: [{
         label: 'Étudiants par Genre',
         data: genreData,
-        backgroundColor: ['#1e90ff','#ff69b4']
+        backgroundColor: ['#1e90ff','#ff1493'] // bleu vif / rose vif
       }]
     },
     options: { responsive: true }
