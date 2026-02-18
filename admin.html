@@ -33,6 +33,7 @@
 
     <h1>Administration des Statistiques</h1>
 
+    <!-- FORMULAIRE AJOUT / MODIF -->
     <section class="card">
       <h2>Ajouter / Modifier un enregistrement</h2>
 
@@ -67,8 +68,11 @@
 
       <button id="saveBtn">Enregistrer</button>
       <button id="exportBtn">Télécharger Excel</button>
+      <input type="file" id="importFile" accept=".xlsx">
+      <button id="importBtn">Importer Excel</button>
     </section>
 
+    <!-- TABLEAU EXISTANT -->
     <section class="card">
       <h2>Données existantes</h2>
       <div id="tableContainer"></div>
@@ -82,37 +86,32 @@
 </footer>
 
 <script>
-const ADMIN_PASSWORD = "FSGF&2026&";   // change si voulu
+const ADMIN_PASSWORD = "fsgf";   // modifie si nécessaire
 let data = [];
 
 /* ===== LOGIN ===== */
-
 document.getElementById("loginBtn").addEventListener("click", () => {
   const pwd = document.getElementById("passwordInput").value;
-
   if (pwd === ADMIN_PASSWORD) {
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
-    loadExcel();  // ← IMPORTANT
+    loadExcel();
   } else {
     alert("Mot de passe incorrect");
   }
 });
 
 /* ===== LECTURE EXCEL ===== */
-
 function loadExcel() {
   fetch('data/fsgf.xlsx')
     .then(res => res.arrayBuffer())
     .then(buffer => {
       const workbook = XLSX.read(buffer, { type: "array" });
       const sheet = workbook.Sheets["Donnees"];
-
       if (!sheet) {
-        alert("Feuille Donnees introuvable");
+        alert("Feuille 'Donnees' introuvable");
         return;
       }
-
       data = XLSX.utils.sheet_to_json(sheet);
       refreshTable();
     })
@@ -122,15 +121,12 @@ function loadExcel() {
 }
 
 /* ===== TABLEAU ===== */
-
 function refreshTable() {
   const container = document.getElementById("tableContainer");
-
   if (data.length === 0) {
     container.innerHTML = "<p>Aucune donnée disponible</p>";
     return;
   }
-
   let html = `<table>
     <thead>
       <tr>
@@ -143,7 +139,6 @@ function refreshTable() {
         <th>Actions</th>
       </tr>
     </thead><tbody>`;
-
   data.forEach((d, index) => {
     html += `<tr>
       <td>${d.Année}</td>
@@ -158,15 +153,12 @@ function refreshTable() {
       </td>
     </tr>`;
   });
-
   html += "</tbody></table>";
   container.innerHTML = html;
 }
 
 /* ===== AJOUT / MODIFICATION ===== */
-
 document.getElementById("saveBtn").addEventListener("click", () => {
-
   const record = {
     Année: document.getElementById("annee").value,
     Département: document.getElementById("departement").value,
@@ -175,42 +167,34 @@ document.getElementById("saveBtn").addEventListener("click", () => {
     Genre: document.getElementById("genre").value,
     Effectifs: document.getElementById("effectifs").value
   };
-
   if (!record.Année || !record.Département || !record.Filière || !record.Effectifs) {
     alert("Veuillez remplir tous les champs");
     return;
   }
-
   const editIndex = document.getElementById("editIndex").value;
-
   if (editIndex === "") {
     data.push(record);
   } else {
     data[editIndex] = record;
     document.getElementById("editIndex").value = "";
   }
-
   clearForm();
   refreshTable();
 });
 
 /* ===== EDIT ===== */
-
 function editRow(index) {
   const d = data[index];
-
   document.getElementById("annee").value = d.Année;
   document.getElementById("departement").value = d.Département;
   document.getElementById("niveau").value = d.Niveau;
   document.getElementById("filiere").value = d.Filière;
   document.getElementById("genre").value = d.Genre;
   document.getElementById("effectifs").value = d.Effectifs;
-
   document.getElementById("editIndex").value = index;
 }
 
 /* ===== DELETE ===== */
-
 function deleteRow(index) {
   if (confirm("Supprimer cette ligne ?")) {
     data.splice(index, 1);
@@ -219,23 +203,47 @@ function deleteRow(index) {
 }
 
 /* ===== EXPORT EXCEL ===== */
-
 document.getElementById("exportBtn").addEventListener("click", () => {
-
   if (data.length === 0) {
     alert("Aucune donnée à exporter");
     return;
   }
-
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Donnees");
-
   XLSX.writeFile(wb, "fsgf.xlsx");
 });
 
-/* ===== UTILS ===== */
+/* ===== IMPORT EXCEL MULTI-LIGNES ===== */
+document.getElementById("importBtn").addEventListener("click", () => {
+  const fileInput = document.getElementById("importFile");
+  const file = fileInput.files[0];
+  if (!file) {
+    alert("Veuillez sélectionner un fichier Excel à importer");
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataArray = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(dataArray, { type: "array" });
+    const sheet = workbook.Sheets["Donnees"];
+    if (!sheet) {
+      alert("Feuille 'Donnees' introuvable dans le fichier");
+      return;
+    }
+    const importedData = XLSX.utils.sheet_to_json(sheet);
+    if (importedData.length === 0) {
+      alert("Aucune donnée trouvée dans le fichier");
+      return;
+    }
+    data = data.concat(importedData);
+    refreshTable();
+    alert(importedData.length + " lignes importées avec succès !");
+  };
+  reader.readAsArrayBuffer(file);
+});
 
+/* ===== UTILS ===== */
 function clearForm() {
   document.getElementById("annee").value = "";
   document.getElementById("departement").value = "";
