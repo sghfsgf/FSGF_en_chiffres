@@ -24,6 +24,7 @@
   <!-- Section Sélection -->
   <section id="selection">
     <h2>Sélection</h2>
+
     <label for="yearSelect">Année :</label>
     <select id="yearSelect"></select>
 
@@ -65,7 +66,7 @@ fetch('data/fsgf.xlsx')
     initSelections();
   });
 
-// Initialiser les listes déroulantes
+// Initialiser les listes déroulantes avec "Tous"
 function initSelections() {
   const years = [...new Set(statsData.map(d => d.Année))].sort((a,b) => b-a);
   const depts = [...new Set(statsData.map(d => d.Département))];
@@ -88,6 +89,7 @@ function initSelections() {
   genreSelect.innerHTML = `<option value="">Tous</option>`;
   genres.forEach(g => genreSelect.innerHTML += `<option value="${g}">${g}</option>`);
 
+  // Afficher le tableau dès le chargement
   updateTable();
 }
 
@@ -98,7 +100,9 @@ function updateTable() {
   const niveau = document.getElementById("niveauSelect").value;
   const genre = document.getElementById("genreSelect").value;
 
-  let filtered = statsData.filter(d => d.Année == year);
+  let filtered = statsData;
+
+  if(year) filtered = filtered.filter(d => d.Année == year);
   if(dept) filtered = filtered.filter(d => d.Département == dept);
   if(niveau) filtered = filtered.filter(d => d.Niveau == niveau);
   if(genre) filtered = filtered.filter(d => d.Genre == genre);
