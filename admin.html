@@ -91,7 +91,7 @@ document.getElementById("loginBtn").addEventListener("click", () => {
   const pwd = document.getElementById("passwordInput").value;
 
   if (pwd === ADMIN_PASSWORD) {
-    document.getElementByById("loginBox").style.display = "none";
+    document.getElementById("loginBox").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
     loadExcel();  // ← IMPORTANT
   } else {
