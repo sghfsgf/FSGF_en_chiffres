@@ -1,129 +1,151 @@
-/* ===== Menu principal ===== */
+/* ======== Styles généraux ======== */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f6fa;
+  color: #333;
+}
+
+h1, h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* ======== Header et menu ======== */
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #ff7f50; /* orangé vif */
   padding: 10px 20px;
+  color: white;
 }
 
 .topbar .logo {
-  font-size: 1.5em;
-  color: white;
   font-weight: bold;
+  font-size: 1.5em;
 }
 
-.menu a {
+.topbar .menu a {
   color: white;
   text-decoration: none;
   margin-left: 20px;
   font-weight: bold;
 }
 
-.menu a:hover {
+.topbar .menu a:hover {
   text-decoration: underline;
 }
 
-/* ===== Corps de page ===== */
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f6fa; /* fond clair */
-  margin: 0;
-  padding: 0;
-}
-
+/* ======== Main Sections ======== */
 main {
-  max-width: 1200px;
-  margin: 20px auto;
-  padding: 0 20px;
+  padding: 20px;
 }
 
-h1, h2 {
-  color: #333;
+/* ======== Section Sélection ======== */
+#selection {
+  background-color: #ffffff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-bottom: 25px;
 }
 
-/* ===== Filtres ===== */
-form#filterForm {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-form#filterForm label {
+#selection label {
+  display: block;
+  margin-top: 10px;
   font-weight: bold;
 }
 
-form#filterForm select {
-  padding: 5px 10px;
-  font-size: 1em;
+#selection select {
+  width: 200px;
+  padding: 5px;
+  margin-top: 5px;
 }
 
-form#filterForm button {
-  padding: 6px 15px;
-  background-color: #ff7f50;
+#selection button {
+  margin-top: 15px;
+  padding: 8px 15px;
+  background-color: #ff7f50; /* bouton orangé vif */
   color: white;
   border: none;
-  cursor: pointer;
-  font-weight: bold;
   border-radius: 4px;
-  transition: background-color 0.3s;
+  cursor: pointer;
 }
 
-form#filterForm button:hover {
+#selection button:hover {
   background-color: #ff6333;
 }
 
-/* ===== Tableau ===== */
-table {
+/* ======== Section Affichage des Résultats ======== */
+#resultats {
+  background-color: #ffffff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#resultats table {
   width: 100%;
   border-collapse: collapse;
-  background-color: white;
+  margin-top: 15px;
 }
 
-table thead {
-  background-color: #ff7f50;
-  color: white;
-}
-
-table th, table td {
+#resultats th, #resultats td {
   border: 1px solid #ddd;
   padding: 8px;
-  text-align: center;
+  text-align: left;
 }
 
-table tr:nth-child(even){
-  background-color: #f2f2f2;
+#resultats th {
+  background-color: #ff7f50; /* en harmonie avec le menu */
+  color: white;
 }
 
-table tr:hover {
-  background-color: #ffe6e0;
+#resultats tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
 
-/* ===== Bouton Export ===== */
-#exportFiltered {
+#resultats tr:hover {
+  background-color: #f1f1f1;
+}
+
+#resultats button {
   margin-top: 15px;
-  padding: 6px 15px;
-  background-color: #ff7f50;
+  padding: 8px 15px;
+  background-color: #4CAF50; /* vert pour export */
   color: white;
   border: none;
-  cursor: pointer;
-  font-weight: bold;
   border-radius: 4px;
-  transition: background-color 0.3s;
+  cursor: pointer;
 }
 
-#exportFiltered:hover {
-  background-color: #ff6333;
+#resultats button:hover {
+  background-color: #45a049;
 }
 
-/* ===== Footer ===== */
+/* ======== Footer ======== */
 footer {
   text-align: center;
-  padding: 15px;
+  padding: 15px 0;
   background-color: #ff7f50;
   color: white;
-  font-weight: bold;
-  margin-top: 30px;
+  margin-top: 40px;
+  font-size: 0.9em;
+}
+
+/* ======== Responsive léger ======== */
+@media screen and (max-width: 768px) {
+  #selection select {
+    width: 100%;
+  }
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .topbar .menu a {
+    margin-left: 0;
+    margin-top: 5px;
+  }
 }
