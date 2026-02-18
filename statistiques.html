@@ -73,6 +73,7 @@ function initSelections() {
   const genres = [...new Set(statsData.map(d => d.Genre))];
 
   const yearSelect = document.getElementById("yearSelect");
+  yearSelect.innerHTML = `<option value="">Tous</option>`;
   years.forEach(y => yearSelect.innerHTML += `<option value="${y}">${y}</option>`);
 
   const deptSelect = document.getElementById("deptSelect");
