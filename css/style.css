@@ -1,4 +1,3 @@
-/* ===== STYLE GLOBAL ===== */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -7,16 +6,14 @@ body {
   color: #2f3640;
 }
 
-/* ===== HEADER / MENU ===== */
 header.topbar {
-  background-color: #ffa500; /* orange vif clair */
-  color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #ffa500; /* orange clair vif */
   padding: 10px 20px;
+  color: white;
 }
-
 
 header.topbar .logo {
   font-size: 1.5em;
@@ -34,9 +31,8 @@ header.topbar .menu a:hover {
   text-decoration: underline;
 }
 
-/* ===== TITRES ET TEXTE DES PAGES ===== */
 main h1, main h2, main h3 {
-  text-align: left;   /* aligné à gauche */
+  text-align: left;
   margin-left: 10px;
   color: #2f3640;
 }
@@ -46,7 +42,6 @@ main {
   text-align: left;
 }
 
-/* ===== CARTES SYNTHÉTIQUES ===== */
 .cards {
   display: flex;
   flex-wrap: wrap;
@@ -66,7 +61,7 @@ main {
 
 .card h2 {
   margin-bottom: 10px;
-  color: #ff6600;  /* titres cartes orange vif */
+  color: #ff6600;
 }
 
 .card p {
@@ -74,7 +69,6 @@ main {
   font-weight: bold;
 }
 
-/* ===== SECTIONS ===== */
 section {
   margin-bottom: 40px;
 }
@@ -84,7 +78,6 @@ section h2 {
   color: #9c88ff;
 }
 
-/* ===== GRAPHIQUES ===== */
 canvas {
   background-color: white;
   border-radius: 10px;
@@ -95,14 +88,11 @@ canvas {
   height: 400px !important;
 }
 
-/* ===== FOOTER ===== */
 footer {
   text-align: center;
   background-color: #2f3640;
   color: white;
   padding: 15px;
-  position: relative;
-  bottom: 0;
   width: 100%;
   font-size: 0.9em;
 }
