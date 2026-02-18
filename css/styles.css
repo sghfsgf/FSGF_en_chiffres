@@ -9,13 +9,14 @@ body {
 
 /* ===== HEADER / MENU ===== */
 header.topbar {
+  background-color: #ffa500; /* orange vif clair */
+  color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #ff6600;  /* orange vif */
   padding: 10px 20px;
-  color: white;
 }
+
 
 header.topbar .logo {
   font-size: 1.5em;
