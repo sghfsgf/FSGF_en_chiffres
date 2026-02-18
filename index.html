@@ -2,12 +2,10 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>FSGF en chiffres - Accueil</title>
+  <title>FSGF en chiffres - Tableau de bord</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
 
 <header class="topbar">
@@ -23,34 +21,22 @@
 <main>
   <h1>Tableau de bord - Vue générale</h1>
 
-  <div class="cards">
-    <div class="card" id="totalEtudiants">
-      <h2>Total Étudiants</h2>
-      <p>0</p>
+  <!-- Carte total étudiants année actuelle -->
+  <section id="dashboard" style="display:flex; flex-wrap: wrap; gap: 20px;">
+    <div class="card" style="flex:1; min-width:200px; padding:20px; background-color:white; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+      <h3>Total Étudiants (Année actuelle)</h3>
+      <p id="totalEtudiants" style="font-size:2em; font-weight:bold;">0</p>
     </div>
-    <div class="card" id="totalMasculin">
-      <h2>Masculin</h2>
-      <p>0</p>
+
+    <div class="card" style="flex:1; min-width:200px; padding:20px; background-color:white; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+      <h3>Total par Département</h3>
+      <ul id="totalDepartement"></ul>
     </div>
-    <div class="card" id="totalFeminin">
-      <h2>Féminin</h2>
-      <p>0</p>
+
+    <div class="card" style="flex:1; min-width:200px; padding:20px; background-color:white; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+      <h3>Total par Niveau</h3>
+      <ul id="totalNiveau"></ul>
     </div>
-  </div>
-
-  <section>
-    <h2>Effectifs par Année</h2>
-    <canvas id="chartAnnee"></canvas>
-  </section>
-
-  <section>
-    <h2>Effectifs par Département</h2>
-    <canvas id="chartDept"></canvas>
-  </section>
-
-  <section>
-    <h2>Répartition par Genre</h2>
-    <canvas id="chartGenre"></canvas>
   </section>
 </main>
 
@@ -58,8 +44,55 @@
   © 2026 FSGF en chiffres
 </footer>
 
-<script src="js/data.js"></script>
-<script src="js/charts.js"></script>
+<script>
+let statsData = [];
+
+// Charger le fichier Excel
+fetch('data/fsgf.xlsx')
+  .then(res => res.arrayBuffer())
+  .then(data => {
+    const workbook = XLSX.read(data, { type: "array" });
+    const sheet = workbook.Sheets["Donnees"];
+    statsData = XLSX.utils.sheet_to_json(sheet);
+    updateDashboard();
+  });
+
+// Mettre à jour le tableau de bord
+function updateDashboard() {
+  const currentYear = new Date().getFullYear();
+
+  // Filtrer les données pour l'année actuelle
+  const currentYearData = statsData.filter(d => Number(d.Année) === currentYear);
+
+  // Total étudiants année actuelle
+  const totalStudents = currentYearData.reduce((sum, d) => sum + Number(d.Effectifs), 0);
+  document.getElementById("totalEtudiants").textContent = totalStudents;
+
+  // Total par département
+  const deptTotals = {};
+  currentYearData.forEach(d => {
+    if(!deptTotals[d.Département]) deptTotals[d.Département] = 0;
+    deptTotals[d.Département] += Number(d.Effectifs);
+  });
+  const deptList = document.getElementById("totalDepartement");
+  deptList.innerHTML = "";
+  for(const dept in deptTotals){
+    deptList.innerHTML += `<li>${dept}: ${deptTotals[dept]}</li>`;
+  }
+
+  // Total par niveau
+  const niveauTotals = {};
+  currentYearData.forEach(d => {
+    if(!niveauTotals[d.Niveau]) niveauTotals[d.Niveau] = 0;
+    niveauTotals[d.Niveau] += Number(d.Effectifs);
+  });
+  const niveauList = document.getElementById("totalNiveau");
+  niveauList.innerHTML = "";
+  for(const niveau in niveauTotals){
+    niveauList.innerHTML += `<li>${niveau}: ${niveauTotals[niveau]}</li>`;
+  }
+}
+</script>
 
 </body>
 </html>
