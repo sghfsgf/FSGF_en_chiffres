@@ -5,6 +5,7 @@
   <title>FSGF en chiffres - Tableau de bord</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -21,21 +22,36 @@
 <main>
   <h1>Tableau de bord - Vue générale</h1>
 
-  <!-- Carte total étudiants année actuelle -->
-  <section id="dashboard" style="display:flex; flex-wrap: wrap; gap: 20px;">
-    <div class="card" style="flex:1; min-width:200px; padding:20px; background-color:white; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+  <!-- Cartes -->
+  <section id="dashboard" style="display:flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px;">
+    <div class="card">
       <h3>Total Étudiants (Année actuelle)</h3>
-      <p id="totalEtudiants" style="font-size:2em; font-weight:bold;">0</p>
+      <p id="totalEtudiants">0</p>
     </div>
 
-    <div class="card" style="flex:1; min-width:200px; padding:20px; background-color:white; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+    <div class="card">
       <h3>Total par Département</h3>
       <ul id="totalDepartement"></ul>
     </div>
 
-    <div class="card" style="flex:1; min-width:200px; padding:20px; background-color:white; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+    <div class="card">
       <h3>Total par Niveau</h3>
       <ul id="totalNiveau"></ul>
+    </div>
+  </section>
+
+  <!-- Graphiques -->
+  <section>
+    <h2>Graphiques Année <span id="currentYearLabel"></span></h2>
+    <div style="display:flex; flex-wrap: wrap; gap:20px;">
+      <!-- Graphique par Département -->
+      <div style="flex:1; min-width:300px;">
+        <canvas id="deptChart"></canvas>
+      </div>
+      <!-- Graphique par Niveau -->
+      <div style="flex:1; min-width:300px;">
+        <canvas id="niveauChart"></canvas>
+      </div>
     </div>
   </section>
 </main>
@@ -60,15 +76,13 @@ fetch('data/fsgf.xlsx')
 // Mettre à jour le tableau de bord
 function updateDashboard() {
   const currentYear = new Date().getFullYear();
-
-  // Filtrer les données pour l'année actuelle
   const currentYearData = statsData.filter(d => Number(d.Année) === currentYear);
 
-  // Total étudiants année actuelle
+  // Total étudiants
   const totalStudents = currentYearData.reduce((sum, d) => sum + Number(d.Effectifs), 0);
   document.getElementById("totalEtudiants").textContent = totalStudents;
 
-  // Total par département
+  // Total par Département
   const deptTotals = {};
   currentYearData.forEach(d => {
     if(!deptTotals[d.Département]) deptTotals[d.Département] = 0;
@@ -80,7 +94,7 @@ function updateDashboard() {
     deptList.innerHTML += `<li>${dept}: ${deptTotals[dept]}</li>`;
   }
 
-  // Total par niveau
+  // Total par Niveau
   const niveauTotals = {};
   currentYearData.forEach(d => {
     if(!niveauTotals[d.Niveau]) niveauTotals[d.Niveau] = 0;
@@ -91,6 +105,58 @@ function updateDashboard() {
   for(const niveau in niveauTotals){
     niveauList.innerHTML += `<li>${niveau}: ${niveauTotals[niveau]}</li>`;
   }
+
+  // Générer les graphiques
+  updateCharts(currentYearData);
+}
+
+// Graphiques avec Chart.js
+function updateCharts(currentYearData){
+  document.getElementById("currentYearLabel").textContent = new Date().getFullYear();
+
+  // Département
+  const deptTotals = {};
+  currentYearData.forEach(d => {
+    if(!deptTotals[d.Département]) deptTotals[d.Département] = 0;
+    deptTotals[d.Département] += Number(d.Effectifs);
+  });
+  const deptLabels = Object.keys(deptTotals);
+  const deptData = Object.values(deptTotals);
+  const deptCtx = document.getElementById("deptChart").getContext("2d");
+  new Chart(deptCtx, {
+    type: 'bar',
+    data: {
+      labels: deptLabels,
+      datasets: [{
+        label: 'Étudiants par Département',
+        data: deptData,
+        backgroundColor: '#ff7f50'
+      }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+
+  // Niveau
+  const niveauTotals = {};
+  currentYearData.forEach(d => {
+    if(!niveauTotals[d.Niveau]) niveauTotals[d.Niveau] = 0;
+    niveauTotals[d.Niveau] += Number(d.Effectifs);
+  });
+  const niveauLabels = Object.keys(niveauTotals);
+  const niveauData = Object.values(niveauTotals);
+  const niveauCtx = document.getElementById("niveauChart").getContext("2d");
+  new Chart(niveauCtx, {
+    type: 'pie',
+    data: {
+      labels: niveauLabels,
+      datasets: [{
+        label: 'Étudiants par Niveau',
+        data: niveauData,
+        backgroundColor: ['#ff7f50','#ffa07a','#ff6347','#ff4500','#ff8c00']
+      }]
+    },
+    options: { responsive: true }
+  });
 }
 </script>
 
