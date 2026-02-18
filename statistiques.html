@@ -41,9 +41,11 @@
   </section>
 
   <!-- Section Affichage des Résultats -->
-  <section id="resultats">
+  <section id="resultats" class="card">
     <h2>Affichage des Résultats</h2>
-    <div id="tableContainer"></div>
+    <div id="tableContainer">
+      <p>Aucun résultat à afficher</p>
+    </div>
     <button id="exportExcel">Exporter en Excel</button>
   </section>
 </main>
@@ -55,16 +57,17 @@
 <script>
 let statsData = [];
 
-// Charger Excel
+// Charger le fichier Excel
 fetch('data/fsgf.xlsx')
   .then(res => res.arrayBuffer())
   .then(data => {
     const workbook = XLSX.read(data, { type: "array" });
     const sheet = workbook.Sheets["Donnees"];
+    if (!sheet) return console.log("Feuille Donnees introuvable");
     statsData = XLSX.utils.sheet_to_json(sheet);
-
     initSelections();
-  });
+  })
+  .catch(() => console.log("Aucun fichier Excel trouvé (normal au début)"));
 
 // Initialiser les listes déroulantes avec "Tous"
 function initSelections() {
@@ -88,9 +91,6 @@ function initSelections() {
   const genreSelect = document.getElementById("genreSelect");
   genreSelect.innerHTML = `<option value="">Tous</option>`;
   genres.forEach(g => genreSelect.innerHTML += `<option value="${g}">${g}</option>`);
-
-  // Afficher le tableau dès le chargement
-
 }
 
 // Mettre à jour le tableau selon la sélection
@@ -108,6 +108,12 @@ function updateTable() {
   if(genre) filtered = filtered.filter(d => d.Genre == genre);
 
   const tableContainer = document.getElementById("tableContainer");
+
+  if(filtered.length === 0){
+    tableContainer.innerHTML = "<p>Aucun résultat à afficher</p>";
+    return;
+  }
+
   let html = `<table>
     <thead>
       <tr>
