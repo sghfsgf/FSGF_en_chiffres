@@ -1,98 +1,129 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f5f6fa;
-  color: #2f3640;
-}
-
-header.topbar {
+/* ===== Menu principal ===== */
+.topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #ffa500; /* orange clair vif */
+  background-color: #ff7f50; /* orangé vif */
   padding: 10px 20px;
-  color: white;
 }
 
-header.topbar .logo {
+.topbar .logo {
   font-size: 1.5em;
+  color: white;
   font-weight: bold;
 }
 
-header.topbar .menu a {
+.menu a {
   color: white;
   text-decoration: none;
-  margin-left: 15px;
+  margin-left: 20px;
   font-weight: bold;
 }
 
-header.topbar .menu a:hover {
+.menu a:hover {
   text-decoration: underline;
 }
 
-main h1, main h2, main h3 {
-  text-align: left;
-  margin-left: 10px;
-  color: #2f3640;
+/* ===== Corps de page ===== */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f6fa; /* fond clair */
+  margin: 0;
+  padding: 0;
 }
 
 main {
-  padding: 20px;
-  text-align: left;
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 20px;
 }
 
-.cards {
+h1, h2 {
+  color: #333;
+}
+
+/* ===== Filtres ===== */
+form#filterForm {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 30px;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.card {
-  background-color: white;
-  flex: 1;
-  min-width: 200px;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.card h2 {
-  margin-bottom: 10px;
-  color: #ff6600;
-}
-
-.card p {
-  font-size: 2em;
+form#filterForm label {
   font-weight: bold;
 }
 
-section {
-  margin-bottom: 40px;
+form#filterForm select {
+  padding: 5px 10px;
+  font-size: 1em;
 }
 
-section h2 {
-  margin-bottom: 15px;
-  color: #9c88ff;
+form#filterForm button {
+  padding: 6px 15px;
+  background-color: #ff7f50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 4px;
+  transition: background-color 0.3s;
 }
 
-canvas {
+form#filterForm button:hover {
+  background-color: #ff6333;
+}
+
+/* ===== Tableau ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
   background-color: white;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  width: 100% !important;
-  max-width: 800px;
-  height: 400px !important;
 }
 
+table thead {
+  background-color: #ff7f50;
+  color: white;
+}
+
+table th, table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+table tr:nth-child(even){
+  background-color: #f2f2f2;
+}
+
+table tr:hover {
+  background-color: #ffe6e0;
+}
+
+/* ===== Bouton Export ===== */
+#exportFiltered {
+  margin-top: 15px;
+  padding: 6px 15px;
+  background-color: #ff7f50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+#exportFiltered:hover {
+  background-color: #ff6333;
+}
+
+/* ===== Footer ===== */
 footer {
   text-align: center;
-  background-color: #2f3640;
-  color: white;
   padding: 15px;
-  width: 100%;
-  font-size: 0.9em;
+  background-color: #ff7f50;
+  color: white;
+  font-weight: bold;
+  margin-top: 30px;
 }
