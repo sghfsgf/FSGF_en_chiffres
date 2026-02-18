@@ -199,3 +199,54 @@ footer {
     padding: 8px 12px;
   }
 }
+/* ===== SÉLECTION EN COLONNE POUR STATISTIQUES ===== */
+#selection {
+  display: flex;
+  flex-direction: column;   /* empile verticalement */
+  gap: 12px;                /* espace entre les champs */
+  max-width: 300px;         /* largeur raisonnable */
+  margin-bottom: 20px;
+}
+
+/* Chaque label */
+#selection label {
+  font-weight: bold;
+}
+
+/* Champs select */
+#selection select {
+  padding: 6px 10px;
+  font-size: 1em;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Boutons Afficher et Exporter */
+#selection button {
+  padding: 8px 15px;
+  font-weight: bold;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Bouton Afficher */
+#afficherBtn {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Bouton Exporter */
+#exportBtn {
+  background-color: #007bff;
+  color: white;
+  margin-top: 5px; /* petit espace sous Afficher */
+}
+
+/* OPTIONNEL : responsive pour mobile */
+@media (max-width: 500px) {
+  #selection {
+    max-width: 100%; /* prend toute la largeur */
+  }
+}
+
