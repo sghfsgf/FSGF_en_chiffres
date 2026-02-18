@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>FSGF en chiffres - Comparaisons</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">FSGF en chiffres</div>
+  <nav class="menu">
+    <a href="index.html">Accueil</a>
+    <a href="statistiques.html">Statistiques</a>
+    <a href="comparaisons.html">Comparaisons</a>
+    <a href="admin.html">Admin</a>
+  </nav>
+</header>
+
+<main>
+  <h1>Comparaisons</h1>
+
+  <!-- Comparaison par Année -->
+  <section>
+    <h2>Comparaison par Année</h2>
+    <canvas id="compareAnnee"></canvas>
+  </section>
+
+  <!-- Comparaison par Département -->
+  <section>
+    <h2>Comparaison par Département</h2>
+    <canvas id="compareDept"></canvas>
+  </section>
+
+</main>
+
+<footer>
+  © 2026 FSGF en chiffres
+</footer>
+
+<script src="js/data.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("data/fsgf.xlsx")
+    .then(res => res.arrayBuffer())
+    .then(buffer => {
+      const workbook = XLSX.read(buffer, { type: "array" });
+      const sheet = workbook.Sheets["Donnees"];
+      const allData = XLSX.utils.sheet_to_json(sheet);
+
+      // Comparaison par Année
+      const labelsAnnee = [...new Set(allData.map(d => d.Année))];
+      const valuesAnnee = labelsAnnee.map(annee =>
+        allData.filter(d=>d.Année===annee).reduce((acc,d)=>acc+d.Effectifs,0)
+      );
+      new Chart(document.getElementById("compareAnnee"), {
+        type:'bar',
+        data:{labels:labelsAnnee, datasets:[{label:"Effectifs par Année", data:valuesAnnee, backgroundColor:"#ff6600"}]}
+      });
+
+      // Comparaison par Département
+      const labelsDept = [...new Set(allData.map(d=>d.Département))];
+      const valuesDept = labelsDept.map(dep =>
+        allData.filter(d=>d.Département===dep).reduce((acc,d)=>acc+d.Effectifs,0)
+      );
+      new Chart(document.getElementById("compareDept"), {
+        type:'bar',
+        data:{labels:labelsDept, datasets:[{label:"Effectifs par Département", data:valuesDept, backgroundColor:"#9c88ff"}]}
+      });
+    });
+});
+</script>
+
+</body>
+</html>
