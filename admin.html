@@ -3,23 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FSGF en chiffres - Administration</title>
 
-  <title>FSGF en chiffres - Comparaisons</title>
-
-  <!-- Favicons -->
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="apple-touch-icon" href="/favicon-512x512.png">
-
-  <!-- Manifest -->
-  <link rel="manifest" href="/manifest.json">
-
-  <!-- CSS CORRIGÉ -->
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="stylesheet" href="CSS/style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body{ font-family: Arial,sans-serif; background:#f4f6f9; margin:0; color:#0f172a; }
+    .topbar{ display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:#ff6b00; color:white; }
+    .menu a{ color:white; text-decoration:none; margin-left:15px; font-weight:500; }
+    main{ padding:20px; }
+    h1,h2{text-align:center;}
+    input, select, button{ padding:6px; border-radius:6px; border:1px solid #ddd; margin:4px; }
+    button{ cursor:pointer; }
+    .card{ background:white; border-radius:12px; padding:20px; margin:20px auto; max-width:800px; box-shadow:0 6px 18px rgba(0,0,0,0.08);}
+    footer{ text-align:center; padding:10px; background:#000; color:white; margin-top:20px; }
+    table{ width:100%; border-collapse:collapse; margin-top:10px; }
+    th,td{ border:1px solid #ddd; padding:8px; text-align:center; }
+    th{ background:#ff6b00; color:white; }
+    button#saveBtn, #exportBtn, #importBtn{ background:#ff7f0e; color:white; border:none; font-weight:bold; }
+    button#saveBtn:hover, #exportBtn:hover, #importBtn:hover{ background:#ff9500; }
+  </style>
 </head>
+
 <body>
 
 <header class="topbar">
@@ -44,13 +54,11 @@
 
   <!-- ADMIN -->
   <div id="adminPanel" style="display:none;">
-
     <h1>Administration des Statistiques</h1>
 
     <!-- FORMULAIRE AJOUT / MODIF -->
     <section class="card">
       <h2>Ajouter / Modifier un enregistrement</h2>
-
       <input type="hidden" id="editIndex">
 
       <label>Année</label>
@@ -80,10 +88,12 @@
       <label>Effectifs</label>
       <input type="number" id="effectifs">
 
-      <button id="saveBtn">Enregistrer</button>
-      <button id="exportBtn">Télécharger Excel</button>
-      <input type="file" id="importFile" accept=".xlsx">
-      <button id="importBtn">Importer Excel</button>
+      <div style="text-align:center; margin-top:10px;">
+        <button id="saveBtn">Enregistrer</button>
+        <button id="exportBtn">Télécharger Excel</button>
+        <input type="file" id="importFile" accept=".xlsx">
+        <button id="importBtn">Importer Excel</button>
+      </div>
     </section>
 
     <!-- TABLEAU EXISTANT -->
@@ -91,19 +101,16 @@
       <h2>Données existantes</h2>
       <div id="tableContainer"></div>
     </section>
-
   </div>
 </main>
 
-<footer>
-  © 2026 FSGF en chiffres
-</footer>
+<footer>© 2026 FSGF en chiffres</footer>
 
 <script>
-const ADMIN_PASSWORD = "FSGF&2026&";   // modifie si nécessaire
+const ADMIN_PASSWORD = "FSGF&2026&";
 let data = [];
 
-/* ===== LOGIN ===== */
+/* LOGIN */
 document.getElementById("loginBtn").addEventListener("click", () => {
   const pwd = document.getElementById("passwordInput").value;
   if (pwd === ADMIN_PASSWORD) {
@@ -115,63 +122,40 @@ document.getElementById("loginBtn").addEventListener("click", () => {
   }
 });
 
-/* ===== LECTURE EXCEL ===== */
+/* LECTURE EXCEL */
 function loadExcel() {
   fetch('data/fsgf.xlsx')
     .then(res => res.arrayBuffer())
     .then(buffer => {
       const workbook = XLSX.read(buffer, { type: "array" });
       const sheet = workbook.Sheets["Donnees"];
-      if (!sheet) {
-        alert("Feuille 'Donnees' introuvable");
-        return;
-      }
+      if (!sheet) return alert("Feuille 'Donnees' introuvable");
       data = XLSX.utils.sheet_to_json(sheet);
       refreshTable();
-    })
-    .catch(() => {
-      console.log("Aucun fichier Excel trouvé (normal au début)");
-    });
+    }).catch(() => console.log("Aucun fichier Excel trouvé (normal au début)"));
 }
 
-/* ===== TABLEAU ===== */
+/* TABLEAU */
 function refreshTable() {
   const container = document.getElementById("tableContainer");
-  if (data.length === 0) {
-    container.innerHTML = "<p>Aucune donnée disponible</p>";
-    return;
-  }
-  let html = `<table>
-    <thead>
-      <tr>
-        <th>Année</th>
-        <th>Département</th>
-        <th>Niveau</th>
-        <th>Filière</th>
-        <th>Genre</th>
-        <th>Effectifs</th>
-        <th>Actions</th>
-      </tr>
-    </thead><tbody>`;
-  data.forEach((d, index) => {
-    html += `<tr>
-      <td>${d.Année}</td>
-      <td>${d.Département}</td>
-      <td>${d.Niveau}</td>
-      <td>${d.Filière}</td>
-      <td>${d.Genre}</td>
-      <td>${d.Effectifs}</td>
+  if(data.length===0){ container.innerHTML="<p>Aucune donnée disponible</p>"; return; }
+  let html=`<table><thead><tr>
+    <th>Année</th><th>Département</th><th>Niveau</th><th>Filière</th><th>Genre</th><th>Effectifs</th><th>Actions</th>
+  </tr></thead><tbody>`;
+  data.forEach((d,i)=>{
+    html+=`<tr>
+      <td>${d.Année}</td><td>${d.Département}</td><td>${d.Niveau}</td><td>${d.Filière}</td><td>${d.Genre}</td><td>${d.Effectifs}</td>
       <td>
-        <button onclick="editRow(${index})">Modifier</button>
-        <button onclick="deleteRow(${index})">Supprimer</button>
+        <button onclick="editRow(${i})">Modifier</button>
+        <button onclick="deleteRow(${i})">Supprimer</button>
       </td>
     </tr>`;
   });
-  html += "</tbody></table>";
+  html+="</tbody></table>";
   container.innerHTML = html;
 }
 
-/* ===== AJOUT / MODIFICATION ===== */
+/* AJOUT / MODIFICATION */
 document.getElementById("saveBtn").addEventListener("click", () => {
   const record = {
     Année: document.getElementById("annee").value,
@@ -181,96 +165,64 @@ document.getElementById("saveBtn").addEventListener("click", () => {
     Genre: document.getElementById("genre").value,
     Effectifs: document.getElementById("effectifs").value
   };
-  if (!record.Année || !record.Département || !record.Filière || !record.Effectifs) {
+  if(!record.Année || !record.Département || !record.Filière || !record.Effectifs){
     alert("Veuillez remplir tous les champs");
     return;
   }
   const editIndex = document.getElementById("editIndex").value;
-  if (editIndex === "") {
-    data.push(record);
-  } else {
-    data[editIndex] = record;
-    document.getElementById("editIndex").value = "";
-  }
+  if(editIndex===""){ data.push(record); } else { data[editIndex]=record; document.getElementById("editIndex").value=""; }
   clearForm();
   refreshTable();
 });
 
-/* ===== EDIT ===== */
-function editRow(index) {
-  const d = data[index];
-  document.getElementById("annee").value = d.Année;
-  document.getElementById("departement").value = d.Département;
-  document.getElementById("niveau").value = d.Niveau;
-  document.getElementById("filiere").value = d.Filière;
-  document.getElementById("genre").value = d.Genre;
-  document.getElementById("effectifs").value = d.Effectifs;
-  document.getElementById("editIndex").value = index;
+/* EDIT / DELETE */
+function editRow(i){
+  const d = data[i];
+  document.getElementById("annee").value=d.Année;
+  document.getElementById("departement").value=d.Département;
+  document.getElementById("niveau").value=d.Niveau;
+  document.getElementById("filiere").value=d.Filière;
+  document.getElementById("genre").value=d.Genre;
+  document.getElementById("effectifs").value=d.Effectifs;
+  document.getElementById("editIndex").value=i;
 }
+function deleteRow(i){ if(confirm("Supprimer cette ligne ?")){ data.splice(i,1); refreshTable(); } }
 
-/* ===== DELETE ===== */
-function deleteRow(index) {
-  if (confirm("Supprimer cette ligne ?")) {
-    data.splice(index, 1);
-    refreshTable();
-  }
-}
-
-/* ===== EXPORT EXCEL ===== */
-document.getElementById("exportBtn").addEventListener("click", () => {
-  if (data.length === 0) {
-    alert("Aucune donnée à exporter");
-    return;
-  }
-  const ws = XLSX.utils.json_to_sheet(data);
-  const wb = XLSX.utils.book_new();
+/* EXPORT / IMPORT */
+document.getElementById("exportBtn").addEventListener("click", ()=>{
+  if(data.length===0){ alert("Aucune donnée à exporter"); return; }
+  const ws=XLSX.utils.json_to_sheet(data);
+  const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Donnees");
-  XLSX.writeFile(wb, "fsgf.xlsx");
+  XLSX.writeFile(wb,"fsgf.xlsx");
 });
-
-/* ===== IMPORT EXCEL MULTI-LIGNES ===== */
-document.getElementById("importBtn").addEventListener("click", () => {
-  const fileInput = document.getElementById("importFile");
-  const file = fileInput.files[0];
-  if (!file) {
-    alert("Veuillez sélectionner un fichier Excel à importer");
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const dataArray = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(dataArray, { type: "array" });
-    const sheet = workbook.Sheets["Donnees"];
-    if (!sheet) {
-      alert("Feuille 'Donnees' introuvable dans le fichier");
-      return;
-    }
-    const importedData = XLSX.utils.sheet_to_json(sheet);
-    if (importedData.length === 0) {
-      alert("Aucune donnée trouvée dans le fichier");
-      return;
-    }
-    data = data.concat(importedData);
+document.getElementById("importBtn").addEventListener("click", ()=>{
+  const fileInput=document.getElementById("importFile");
+  const file=fileInput.files[0];
+  if(!file){ alert("Veuillez sélectionner un fichier Excel à importer"); return; }
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    const arr=new Uint8Array(e.target.result);
+    const workbook=XLSX.read(arr,{type:"array"});
+    const sheet=workbook.Sheets["Donnees"];
+    if(!sheet){ alert("Feuille 'Donnees' introuvable dans le fichier"); return; }
+    const importedData=XLSX.utils.sheet_to_json(sheet);
+    if(importedData.length===0){ alert("Aucune donnée trouvée dans le fichier"); return; }
+    data=data.concat(importedData);
     refreshTable();
-    alert(importedData.length + " lignes importées avec succès !");
+    alert(importedData.length+" lignes importées avec succès !");
   };
   reader.readAsArrayBuffer(file);
 });
 
-/* ===== UTILS ===== */
-function clearForm() {
-  document.getElementById("annee").value = "";
-  document.getElementById("departement").value = "";
-  document.getElementById("filiere").value = "";
-  document.getElementById("effectifs").value = "";
+/* UTIL */
+function clearForm(){
+  document.getElementById("annee").value="";
+  document.getElementById("departement").value="";
+  document.getElementById("filiere").value="";
+  document.getElementById("effectifs").value="";
 }
 </script>
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/worker.js')
-    .then(() => console.log('Service Worker enregistré'))
-    .catch(err => console.log('Erreur SW:', err));
-}
-</script>
+
 </body>
 </html>
