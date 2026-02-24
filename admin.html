@@ -124,7 +124,7 @@ document.getElementById("loginBtn").addEventListener("click", () => {
 
 /* LECTURE EXCEL */
 function loadExcel() {
-  fetch('data/fsgf.xlsx')
+ fetch('data/fsgf.xlsx?t=' + new Date().getTime())
     .then(res => res.arrayBuffer())
     .then(buffer => {
       const workbook = XLSX.read(buffer, { type: "array" });
