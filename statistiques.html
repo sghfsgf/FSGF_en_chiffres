@@ -76,7 +76,7 @@
 let statsData = [];
 
 // Charger le fichier Excel
-fetch('data/fsgf.xlsx')
+fetch('data/fsgf.xlsx?t=' + new Date().getTime())
   .then(res => res.arrayBuffer())
   .then(data => {
     const workbook = XLSX.read(data, { type: "array" });
