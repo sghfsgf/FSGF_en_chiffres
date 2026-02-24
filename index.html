@@ -87,7 +87,7 @@
 <script>
 let statsData=[], deptChartObj, niveauChartObj, genreChartObj;
 
-fetch('data/fsgf.xlsx')
+fetch('data/fsgf.xlsx?t=' + new Date().getTime())
 .then(res=>res.arrayBuffer())
 .then(data=>{
   const workbook=XLSX.read(data,{type:"array"});
