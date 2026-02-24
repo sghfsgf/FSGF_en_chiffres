@@ -186,12 +186,48 @@ function buildYearChart(){
         tension: 0.2
       }]
     },
-    options: {
-      responsive: true,
-      scales: {
-        y: { beginAtZero: true }
+   options: {
+  responsive: true,
+
+  animation: {
+    duration: 1500,          // durée animation
+    easing: 'easeOutQuart'   // effet moderne
+  },
+
+  plugins: {
+    legend: {
+      display: true,
+      labels: {
+        font: { size: 14 }
       }
     }
+  },
+
+  elements: {
+    line: {
+      tension: 0.35          // courbe plus élégante
+    },
+    point: {
+      radius: 4,
+      hoverRadius: 7,
+      hitRadius: 10
+    }
+  },
+
+  scales: {
+    y: {
+      beginAtZero: true,
+      ticks: {
+        font: { size: 12 }
+      }
+    },
+    x: {
+      ticks: {
+        font: { size: 12 }
+      }
+    }
+  }
+}
   });
 }
 
