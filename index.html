@@ -3,139 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>FSGF en chiffres - Vue globale</title>
-
+  <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    body{
-      font-family: Arial, sans-serif;
-      background:#f4f6f9;
-      margin:0;
-      color:#0f172a;
-    }
-
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:12px 24px;
-      background:#1e3a8a;
-      color:white;
-      box-shadow:0 4px 10px rgba(0,0,0,0.15);
-    }
-
-    .menu a{
-      color:white;
-      text-decoration:none;
-      margin-left:18px;
-      font-weight:500;
-    }
-
-    .menu a:hover{
-      opacity:0.85;
-    }
-
-    main{
-      padding:20px;
-      max-width:1200px;
-      margin:auto;
-    }
-
-    h1, h2{
-      text-align:center;
-      margin:10px 0;
-    }
-
-    .card{
-      background:white;
-      border-radius:14px;
-      padding:18px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.08);
-      margin-bottom:20px;
-      animation:fadeIn 0.6s ease;
-    }
-
-    @keyframes fadeIn{
-      from{ opacity:0; transform:translateY(8px); }
-      to{ opacity:1; transform:none; }
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:10px;
-    }
-
-    th, td{
-      border:1px solid #e5e7eb;
-      padding:7px;
-      text-align:center;
-      font-size:14px;
-    }
-
-    th{
-      background:#e2e8f0;
-    }
-
-    .charts{
-      display:flex;
-      flex-wrap:wrap;
-      gap:20px;
-    }
-
-    .chart-box{
-      flex:1;
-      min-width:280px;
-      background:white;
-      padding:12px;
-      border-radius:14px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.08);
-      animation:fadeIn 0.6s ease;
-    }
-
-    .btn{
-      background:#ff7f0e;
-      color:white;
-      border:none;
-      border-radius:8px;
-      padding:9px;
-      width:100%;
-      margin-top:10px;
-      cursor:pointer;
-      font-weight:bold;
-      transition:0.2s;
-    }
-
-    .btn:hover{
-      background:#ff9500;
-      transform:scale(1.02);
-    }
-
-    .kpi{
-      font-size:2.2em;
-      font-weight:bold;
-      text-align:center;
-      margin:12px 0;
-    }
-
-    .positive{ color:#16a34a; }
-    .negative{ color:#dc2626; }
-
-    footer{
-      text-align:center;
-      padding:12px;
-      background:#1e3a8a;
-      color:white;
-      margin-top:30px;
-    }
-  </style>
 </head>
-
 <body>
 
 <header class="topbar">
-  <div><strong>FSGF en chiffres</strong></div>
+  <div class="logo">FSGF en chiffres</div>
   <nav class="menu">
     <a href="index.html">Accueil</a>
     <a href="statistiques.html">Statistiques</a>
@@ -145,50 +20,49 @@
 </header>
 
 <main>
+  <h1>Vue globale - <span id="lastYearLabel"></span></h1>
 
-<h1>Vue globale - <span id="lastYearLabel"></span></h1>
+  <!-- KPI -->
+  <section class="card">
+    <h2>Total Étudiants</h2>
+    <div class="kpi" id="totalStudents">0</div>
+    <div style="text-align:center;">
+      Variation vs <span id="prevYearLabel"></span> :
+      <strong id="variation"></strong>
+    </div>
+  </section>
 
-<!-- KPI -->
-<section class="card">
-  <h2>Total Étudiants</h2>
-  <div class="kpi" id="totalStudents">0</div>
-  <div style="text-align:center;">
-    Variation vs <span id="prevYearLabel"></span> :
-    <strong id="variation"></strong>
-  </div>
-</section>
+  <!-- TABLEAU CROISÉ -->
+  <section class="card">
+    <h2>Effectifs <span id="tableYearLabel"></span></h2>
+    <table id="pivotTable">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </section>
 
-<!-- TABLEAU CROISÉ -->
-<section class="card">
-  <h2>Effectifs <span id="tableYearLabel"></span></h2>
-  <table id="pivotTable">
-    <thead></thead>
-    <tbody></tbody>
-  </table>
-</section>
+  <!-- CHARTS -->
+  <section class="charts">
+    <div class="chart-box">
+      <canvas id="deptChart"></canvas>
+      <button class="btn" onclick="exportPNG('deptChart')">Exporter PNG</button>
+    </div>
 
-<!-- CHARTS -->
-<section class="charts">
-  <div class="chart-box">
-    <canvas id="deptChart"></canvas>
-    <button class="btn" onclick="exportPNG('deptChart')">Exporter PNG</button>
-  </div>
+    <div class="chart-box">
+      <canvas id="niveauChart"></canvas>
+      <button class="btn" onclick="exportPNG('niveauChart')">Exporter PNG</button>
+    </div>
 
-  <div class="chart-box">
-    <canvas id="niveauChart"></canvas>
-    <button class="btn" onclick="exportPNG('niveauChart')">Exporter PNG</button>
-  </div>
-
-  <div class="chart-box">
-    <canvas id="genreChart"></canvas>
-    <button class="btn" onclick="exportPNG('genreChart')">Exporter PNG</button>
-  </div>
-</section>
+    <div class="chart-box">
+      <canvas id="genreChart"></canvas>
+      <button class="btn" onclick="exportPNG('genreChart')">Exporter PNG</button>
+    </div>
+  </section>
 
 </main>
 
 <footer>
-© FSGF en chiffres
+  © 2026 FSGF en chiffres
 </footer>
 
 <script>
@@ -217,7 +91,6 @@ fetch('data/fsgf.xlsx')
   });
 
 function buildDashboard(current, previous){
-
   const totalCurrent = current.reduce((s,d)=>s+Number(d.Effectifs),0);
   const totalPrevious = previous.reduce((s,d)=>s+Number(d.Effectifs),0);
 
@@ -236,7 +109,6 @@ function buildDashboard(current, previous){
 }
 
 function buildPivotTable(data){
-
   const genres = [...new Set(data.map(d => d.Genre))].sort();
   const pivot = {};
 
@@ -260,24 +132,20 @@ function buildPivotTable(data){
   genres.forEach(g => headerRow += `<th>${g}</th>`);
   headerRow += "<th>Total</th></tr>";
   thead.innerHTML = headerRow;
-
   tbody.innerHTML = "";
 
   for(const dept in pivot){
     for(const niv in pivot[dept]){
-
       let row = "<tr>";
       row += `<td><strong>${dept}</strong></td>`;
       row += `<td>${niv}</td>`;
 
       let total = 0;
-
       genres.forEach(g => {
         const val = pivot[dept][niv][g] || 0;
         row += `<td>${val}</td>`;
         total += val;
       });
-
       row += `<td><strong>${total}</strong></td></tr>`;
       tbody.innerHTML += row;
     }
@@ -285,17 +153,13 @@ function buildPivotTable(data){
 }
 
 function buildCharts(data){
-
   const deptTotals = {};
   data.forEach(d => deptTotals[d.Département]=(deptTotals[d.Département]||0)+Number(d.Effectifs));
 
   if(deptChartObj) deptChartObj.destroy();
   deptChartObj = new Chart(document.getElementById("deptChart"),{
     type:'bar',
-    data:{
-      labels:Object.keys(deptTotals),
-      datasets:[{label:'Départements', data:Object.values(deptTotals), backgroundColor:'#ff7f0e'}]
-    },
+    data:{ labels:Object.keys(deptTotals), datasets:[{label:'Départements', data:Object.values(deptTotals), backgroundColor:'#ff7f0e'}]},
     options:{ responsive:true, plugins:{legend:{display:false}} }
   });
 
