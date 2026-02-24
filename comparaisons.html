@@ -40,12 +40,19 @@
 
 <main>
   <h1>Comparaisons</h1>
+ <!-- BOUTON EXPORT + SÉLECTION ANNÉE -->
+<div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+  
+  <!-- Bouton orange pour exporter les 3 graphiques -->
+  <button id="exportAllCharts" class="btn-orange">
+    Exporter les 3 graphiques
+  </button>
 
-  <!-- Filtre Année -->
-  <div style="text-align:center; margin-bottom:20px;">
-    <label for="yearFilter">Sélectionner une année :</label>
-    <select id="yearFilter"></select>
-  </div>
+  <!-- Sélecteur d'année -->
+  <label for="yearFilter" style="margin:0;">Sélectionner une année :</label>
+  <select id="yearFilter"></select>
+
+</div>
 
   <!-- Graphiques existants -->
   <section style="display:flex; flex-wrap: wrap; gap:20px; justify-content:center; margin-top:20px;">
