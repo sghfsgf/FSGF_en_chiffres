@@ -341,6 +341,12 @@ function exportPNG(id){
   link.click();
 }
 </script>
-
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/worker.js')
+    .then(() => console.log('Service Worker enregistré'))
+    .catch(err => console.log('Erreur SW:', err));
+}
+</script>
 </body>
 </html>
