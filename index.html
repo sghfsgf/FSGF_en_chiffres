@@ -2,10 +2,79 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>FSGF en chiffres - Tableau de bord</title>
+  <title>FSGF en chiffres - Vue globale 2026</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      color: #0f172a;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: #1e3a8a;
+      color: white;
+    }
+    .topbar .logo {
+      font-size: 1.4em;
+      font-weight: bold;
+    }
+    .topbar .menu a {
+      margin-left: 15px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    header, main, footer { padding: 0 20px; }
+    h1, h2 { text-align: center; }
+    .card {
+      background:white;
+      border-radius:12px;
+      padding:15px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.08);
+      margin-bottom:20px;
+    }
+    table {
+      width:100%;
+      border-collapse: collapse;
+      margin-top:10px;
+    }
+    table th, table td {
+      border:1px solid #ddd;
+      padding:6px 8px;
+      text-align:center;
+    }
+    table td .bar {
+      height: 12px;
+      border-radius:6px;
+      background:#ff7f0e;
+    }
+    .btn-orange {
+      background-color:#ff7f0e;
+      color:white;
+      border:none;
+      border-radius:6px;
+      padding:8px 16px;
+      margin-top:8px;
+      cursor:pointer;
+      transition:0.3s;
+      display:block;
+      width:100%;
+    }
+    .btn-orange:hover {
+      background-color:#ff9500;
+      transform:translateY(-2px);
+    }
+    @media (max-width:768px){
+      .chart-container { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
 
@@ -20,189 +89,136 @@
 </header>
 
 <main>
-  <h1>Tableau de bord - Vue générale</h1>
+  <h1>Vue globale - 2026</h1>
 
-  <!-- Cartes résumé -->
-  <section id="dashboard" style="display:flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px;">
-    <div class="card">
-      <h3>Total Étudiants (Année actuelle)</h3>
-      <p id="totalEtudiants">0</p>
-    </div>
-
-    <div class="card">
-      <h3>Total par Département</h3>
-      <ul id="totalDepartement"></ul>
-    </div>
-
-    <div class="card">
-      <h3>Total par Niveau</h3>
-      <ul id="totalNiveau"></ul>
-    </div>
-
-    <div class="card">
-      <h3>Total par Genre</h3>
-      <ul id="totalGenre"></ul>
-    </div>
+  <!-- 1️⃣ Mini tableau -->
+  <section class="card">
+    <h2>Effectifs 2026 par Département / Niveau / Genre</h2>
+    <table id="miniTable">
+      <thead>
+        <tr>
+          <th>Département</th>
+          <th>Niveau</th>
+          <th>Genre</th>
+          <th>Effectifs</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </section>
 
-  <!-- Graphiques -->
-  <section>
-    <h2>Graphiques Année <span id="currentYearLabel"></span></h2>
-    <div style="display:flex; flex-wrap: wrap; gap:20px;">
-      <!-- Graphique par Département -->
-      <div style="flex:1; min-width:300px;">
-        <canvas id="deptChart"></canvas>
-      </div>
-      <!-- Graphique par Niveau -->
-      <div style="flex:1; min-width:300px;">
-        <canvas id="niveauChart"></canvas>
-      </div>
-      <!-- Graphique par Genre -->
-      <div style="flex:1; min-width:300px;">
-        <canvas id="genreChart"></canvas>
-      </div>
+  <!-- 2️⃣ Graphiques -->
+  <section class="chart-container" style="display:flex; flex-wrap:wrap; gap:20px;">
+    <div style="flex:1; min-width:300px;" class="card">
+      <canvas id="deptChart"></canvas>
+      <button class="btn-orange" onclick="exportChartPNG('deptChart')">Exporter PNG</button>
+    </div>
+    <div style="flex:1; min-width:300px;" class="card">
+      <canvas id="niveauChart"></canvas>
+      <button class="btn-orange" onclick="exportChartPNG('niveauChart')">Exporter PNG</button>
+    </div>
+    <div style="flex:1; min-width:300px;" class="card">
+      <canvas id="genreChart"></canvas>
+      <button class="btn-orange" onclick="exportChartPNG('genreChart')">Exporter PNG</button>
     </div>
   </section>
 </main>
 
-<footer>
+<footer style="text-align:center; padding:15px; background:#1e3a8a; color:white;">
   © 2026 FSGF en chiffres
 </footer>
 
 <script>
 let statsData = [];
 
-// Charger le fichier Excel
+// Charger Excel
 fetch('data/fsgf.xlsx')
   .then(res => res.arrayBuffer())
   .then(data => {
     const workbook = XLSX.read(data, { type: "array" });
     const sheet = workbook.Sheets["Donnees"];
     statsData = XLSX.utils.sheet_to_json(sheet);
-    updateDashboard();
+
+    // Dernière année
+    const years = statsData.map(d=>Number(d.Année));
+    const lastYear = Math.max(...years);
+
+    const lastYearData = statsData.filter(d=>Number(d.Année)===lastYear);
+
+    buildMiniTable(lastYearData);
+    buildCharts(lastYearData);
   });
 
-// Mettre à jour le tableau de bord
-function updateDashboard() {
-  const currentYear = new Date().getFullYear();
-  const currentYearData = statsData.filter(d => Number(d.Année) === currentYear);
-
-  // Total étudiants
-  const totalStudents = currentYearData.reduce((sum, d) => sum + Number(d.Effectifs), 0);
-  document.getElementById("totalEtudiants").textContent = totalStudents;
-
-  // Total par Département
-  const deptTotals = {};
-  currentYearData.forEach(d => {
-    if(!deptTotals[d.Département]) deptTotals[d.Département] = 0;
-    deptTotals[d.Département] += Number(d.Effectifs);
+// 1️⃣ Mini tableau avec barres horizontales
+function buildMiniTable(data){
+  const tbody = document.querySelector("#miniTable tbody");
+  tbody.innerHTML = "";
+  data.forEach(d=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${d.Département}</td>
+      <td>${d.Niveau}</td>
+      <td>${d.Genre}</td>
+      <td>
+        ${d.Effectifs}
+        <div class="bar" style="width:${Math.min(d.Effectifs*2,100)}%"></div>
+      </td>
+    `;
+    tbody.appendChild(tr);
   });
-  const deptList = document.getElementById("totalDepartement");
-  deptList.innerHTML = "";
-  for(const dept in deptTotals){
-    deptList.innerHTML += `<li>${dept}: ${deptTotals[dept]}</li>`;
-  }
-
-  // Total par Niveau
-  const niveauTotals = {};
-  currentYearData.forEach(d => {
-    if(!niveauTotals[d.Niveau]) niveauTotals[d.Niveau] = 0;
-    niveauTotals[d.Niveau] += Number(d.Effectifs);
-  });
-  const niveauList = document.getElementById("totalNiveau");
-  niveauList.innerHTML = "";
-  for(const niveau in niveauTotals){
-    niveauList.innerHTML += `<li>${niveau}: ${niveauTotals[niveau]}</li>`;
-  }
-
-  // Total par Genre
-  const genreTotals = { M:0, F:0 };
-  currentYearData.forEach(d => {
-    if(d.Genre === "M") genreTotals.M += Number(d.Effectifs);
-    else if(d.Genre === "F") genreTotals.F += Number(d.Effectifs);
-  });
-  const genreList = document.getElementById("totalGenre");
-  genreList.innerHTML = "";
-  genreList.innerHTML += `<li>Masculin: ${genreTotals.M}</li>`;
-  genreList.innerHTML += `<li>Féminin: ${genreTotals.F}</li>`;
-
-  // Générer les graphiques
-  updateCharts(currentYearData);
 }
 
-// Graphiques avec Chart.js
-function updateCharts(currentYearData){
-  const currentYear = new Date().getFullYear();
-  document.getElementById("currentYearLabel").textContent = currentYear;
-
-  // ----- Département -----
+// 2️⃣ Graphiques
+let deptChartObj, niveauChartObj, genreChartObj;
+function buildCharts(data){
+  // Département
   const deptTotals = {};
-  currentYearData.forEach(d => {
-    if(!deptTotals[d.Département]) deptTotals[d.Département] = 0;
-    deptTotals[d.Département] += Number(d.Effectifs);
-  });
+  data.forEach(d=>deptTotals[d.Département] = (deptTotals[d.Département]||0) + Number(d.Effectifs));
   const deptLabels = Object.keys(deptTotals);
   const deptData = Object.values(deptTotals);
   const deptCtx = document.getElementById("deptChart").getContext("2d");
-  new Chart(deptCtx, {
-    type: 'bar',
-    data: {
-      labels: deptLabels,
-      datasets: [{
-        label: 'Étudiants par Département',
-        data: deptData,
-        backgroundColor: '#ff7f50' // bar chart orange
-      }]
-    },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  if(deptChartObj) deptChartObj.destroy();
+  deptChartObj = new Chart(deptCtx, {
+    type:'bar',
+    data:{ labels:deptLabels, datasets:[{label:'Étudiants par Département', data:deptData, backgroundColor:'#ff7f0e'}] },
+    options:{ responsive:true, scales:{y:{beginAtZero:true}} }
   });
 
-  // ----- Niveau -----
+  // Niveau
   const niveauTotals = {};
-  currentYearData.forEach(d => {
-    if(!niveauTotals[d.Niveau]) niveauTotals[d.Niveau] = 0;
-    niveauTotals[d.Niveau] += Number(d.Effectifs);
-  });
+  data.forEach(d=>niveauTotals[d.Niveau]=(niveauTotals[d.Niveau]||0)+Number(d.Effectifs));
   const niveauLabels = Object.keys(niveauTotals);
   const niveauData = Object.values(niveauTotals);
   const niveauCtx = document.getElementById("niveauChart").getContext("2d");
-  new Chart(niveauCtx, {
-    type: 'pie',
-    data: {
-      labels: niveauLabels,
-      datasets: [{
-        label: 'Étudiants par Niveau',
-        data: niveauData,
-        backgroundColor: ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd'] 
-        // couleurs distinctes pour chaque niveau
-      }]
-    },
-    options: { responsive: true }
+  if(niveauChartObj) niveauChartObj.destroy();
+  niveauChartObj = new Chart(niveauCtx, {
+    type:'pie',
+    data:{ labels:niveauLabels, datasets:[{label:'Étudiants par Niveau', data:niveauData, backgroundColor:['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd']}] },
+    options:{ responsive:true }
   });
 
-  // ----- Genre -----
-  const genreTotals = { M:0, F:0 };
-  currentYearData.forEach(d => {
-    if(d.Genre === "M") genreTotals.M += Number(d.Effectifs);
-    else if(d.Genre === "F") genreTotals.F += Number(d.Effectifs);
-  });
-  const genreLabels = ["Masculin","Féminin"];
+  // Genre
+  const genreTotals = {M:0,F:0};
+  data.forEach(d=>{ if(d.Genre==='M') genreTotals.M+=Number(d.Effectifs); else if(d.Genre==='F') genreTotals.F+=Number(d.Effectifs); });
+  const genreLabels = ['Masculin','Féminin'];
   const genreData = [genreTotals.M, genreTotals.F];
   const genreCtx = document.getElementById("genreChart").getContext("2d");
-  new Chart(genreCtx, {
-    type: 'pie',
-    data: {
-      labels: genreLabels,
-      datasets: [{
-        label: 'Étudiants par Genre',
-        data: genreData,
-        backgroundColor: ['#1e90ff','#ff1493'] // bleu vif / rose vif
-      }]
-    },
-    options: { responsive: true }
+  if(genreChartObj) genreChartObj.destroy();
+  genreChartObj = new Chart(genreCtx, {
+    type:'pie',
+    data:{ labels:genreLabels, datasets:[{label:'Étudiants par Genre', data:genreData, backgroundColor:['#1e90ff','#ff1493']}] },
+    options:{ responsive:true }
   });
 }
-</script>
 
+// 3️⃣ Export PNG
+function exportChartPNG(chartId){
+  const chartCanvas = document.getElementById(chartId);
+  const link = document.createElement('a');
+  link.download = `${chartId}.png`;
+  link.href = chartCanvas.toDataURL("image/png",1);
+  link.click();
+}
+</script>
 </body>
 </html>
