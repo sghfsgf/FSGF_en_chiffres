@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>FSGF en chiffres - Comparaisons</title>
+
   <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Librairies -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
 <header class="topbar">
@@ -26,21 +31,32 @@
   <label for="yearFilter">Sélectionner une année :</label>
   <select id="yearFilter"></select>
 
-  <!-- Graphiques -->
+  <!-- Graphiques existants -->
   <section style="display:flex; flex-wrap: wrap; gap:20px; margin-top:20px;">
-    <!-- Comparaison par Département -->
     <div style="flex:1; min-width:300px;">
       <canvas id="deptChart"></canvas>
     </div>
-    <!-- Comparaison par Niveau -->
+
     <div style="flex:1; min-width:300px;">
       <canvas id="niveauChart"></canvas>
     </div>
-    <!-- Comparaison par Genre -->
+
     <div style="flex:1; min-width:300px;">
       <canvas id="genreChart"></canvas>
     </div>
   </section>
+
+  <!-- NOUVEAU GRAPHIQUE -->
+  <h2 style="margin-top:40px;">Évolution des effectifs totaux</h2>
+
+  <div style="width:100%; max-width:900px; margin:auto;">
+    <canvas id="totalYearChart"></canvas>
+
+    <button id="exportPNG" style="margin-top:10px;">
+      Exporter en PNG
+    </button>
+  </div>
+
 </main>
 
 <footer>
@@ -58,75 +74,134 @@ fetch('data/fsgf.xlsx')
     const sheet = workbook.Sheets["Donnees"];
     statsData = XLSX.utils.sheet_to_json(sheet);
 
-    // Remplir le select Année
     const years = [...new Set(statsData.map(d => d.Année))].sort((a,b) => b-a);
     const yearFilter = document.getElementById("yearFilter");
+
     years.forEach(y => yearFilter.innerHTML += `<option value="${y}">${y}</option>`);
 
-    // Afficher graphiques pour l'année par défaut (dernière année)
     updateCharts(years[0]);
+    buildYearChart();
   });
 
-// Événement changement année
+// Changement année
 document.getElementById("yearFilter").addEventListener("change", function() {
   updateCharts(this.value);
 });
 
-// Fonction pour mettre à jour les graphiques
+// Graphiques existants
 function updateCharts(selectedYear){
+
   const currentYearData = statsData.filter(d => d.Année == selectedYear);
 
-  // ----- Comparaison par Département -----
+  // Département
   const deptTotals = {};
   currentYearData.forEach(d => {
     if(!deptTotals[d.Département]) deptTotals[d.Département] = 0;
-    deptTotals[d.Département] += Number(d.Effectifs);
+    deptTotals[d.Département] += Number(d.Effectifs || 0);
   });
-  const deptLabels = Object.keys(deptTotals);
-  const deptData = Object.values(deptTotals);
+
   const deptCtx = document.getElementById("deptChart").getContext("2d");
   if(window.deptChartObj) window.deptChartObj.destroy();
+
   window.deptChartObj = new Chart(deptCtx, {
     type: 'bar',
-    data: { labels: deptLabels, datasets:[{label:'Département', data:deptData, backgroundColor:'#1f77b4'}] },
+    data: {
+      labels: Object.keys(deptTotals),
+      datasets:[{
+        label:'Département',
+        data:Object.values(deptTotals),
+        backgroundColor:'#1f77b4'
+      }]
+    },
     options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
   });
 
-  // ----- Comparaison par Niveau -----
+  // Niveau
   const niveauTotals = {};
   currentYearData.forEach(d => {
     if(!niveauTotals[d.Niveau]) niveauTotals[d.Niveau] = 0;
-    niveauTotals[d.Niveau] += Number(d.Effectifs);
+    niveauTotals[d.Niveau] += Number(d.Effectifs || 0);
   });
-  const niveauLabels = Object.keys(niveauTotals);
-  const niveauData = Object.values(niveauTotals);
+
   const niveauCtx = document.getElementById("niveauChart").getContext("2d");
   if(window.niveauChartObj) window.niveauChartObj.destroy();
+
   window.niveauChartObj = new Chart(niveauCtx,{
     type:'pie',
-    data:{ 
-      labels:niveauLabels, 
-      datasets:[{label:'Niveau', data:niveauData, backgroundColor:['#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b']}] 
+    data:{
+      labels:Object.keys(niveauTotals),
+      datasets:[{
+        data:Object.values(niveauTotals)
+      }]
     },
     options:{responsive:true}
   });
 
-  // ----- Comparaison par Genre -----
-  const genreTotals = {M:0,F:0};
+  // Genre
+  const genreTotals = {M:0, F:0};
   currentYearData.forEach(d=>{
-    if(d.Genre=="M") genreTotals.M += Number(d.Effectifs);
-    else if(d.Genre=="F") genreTotals.F += Number(d.Effectifs);
+    if(d.Genre=="M") genreTotals.M += Number(d.Effectifs || 0);
+    if(d.Genre=="F") genreTotals.F += Number(d.Effectifs || 0);
   });
-  const genreLabels = ["Masculin","Féminin"];
-  const genreData = [genreTotals.M, genreTotals.F];
+
   const genreCtx = document.getElementById("genreChart").getContext("2d");
   if(window.genreChartObj) window.genreChartObj.destroy();
+
   window.genreChartObj = new Chart(genreCtx,{
     type:'pie',
-    data:{ labels:genreLabels, datasets:[{label:'Genre', data:genreData, backgroundColor:['#1e90ff','#ff1493']}] },
+    data:{
+      labels:["Masculin","Féminin"],
+      datasets:[{
+        data:[genreTotals.M, genreTotals.F]
+      }]
+    },
     options:{responsive:true}
   });
 }
+
+// 🔵 Courbe annuelle
+function buildYearChart(){
+
+  const totalsByYear = {};
+
+  statsData.forEach(d => {
+    if(!totalsByYear[d.Année]) totalsByYear[d.Année] = 0;
+    totalsByYear[d.Année] += Number(d.Effectifs || 0);
+  });
+
+  const labels = Object.keys(totalsByYear).sort();
+  const data = labels.map(y => totalsByYear[y]);
+
+  const ctx = document.getElementById("totalYearChart").getContext("2d");
+
+  window.totalYearChartObj = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Effectifs totaux',
+        data: data,
+        borderWidth: 2,
+        fill: false,
+        tension: 0.2
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+}
+
+// 🔵 Export PNG
+document.getElementById("exportPNG").addEventListener("click", function(){
+  const link = document.createElement('a');
+  link.href = document.getElementById("totalYearChart").toDataURL("image/png");
+  link.download = "effectifs_annuels.png";
+  link.click();
+});
 </script>
 
 </body>
