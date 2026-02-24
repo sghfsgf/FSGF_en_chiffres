@@ -2,84 +2,111 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>FSGF en chiffres - Vue globale 2026</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>FSGF en chiffres - Vue globale</title>
+
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
-    body {
+    body{
       font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      margin: 0;
-      color: #0f172a;
+      background:#f4f6f9;
+      margin:0;
+      color:#0f172a;
     }
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      background: #1e3a8a;
-      color: white;
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 20px;
+      background:#1e3a8a;
+      color:white;
     }
-    .topbar .logo {
-      font-size: 1.4em;
-      font-weight: bold;
+
+    .menu a{
+      color:white;
+      text-decoration:none;
+      margin-left:15px;
+      font-weight:500;
     }
-    .topbar .menu a {
-      margin-left: 15px;
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    header, main, footer { padding: 0 20px; }
-    h1, h2 { text-align: center; }
-    .card {
+
+    main{ padding:20px; }
+
+    h1, h2{ text-align:center; }
+
+    .card{
       background:white;
       border-radius:12px;
       padding:15px;
       box-shadow:0 6px 18px rgba(0,0,0,0.08);
       margin-bottom:20px;
     }
-    table {
+
+    table{
       width:100%;
-      border-collapse: collapse;
+      border-collapse:collapse;
       margin-top:10px;
+      background:white;
     }
-    table th, table td {
+
+    th, td{
       border:1px solid #ddd;
-      padding:6px 8px;
+      padding:6px;
       text-align:center;
     }
-    table td .bar {
-      height: 12px;
-      border-radius:6px;
-      background:#ff7f0e;
+
+    th{
+      background:#e2e8f0;
     }
-    .btn-orange {
-      background-color:#ff7f0e;
+
+    .charts{
+      display:flex;
+      flex-wrap:wrap;
+      gap:20px;
+    }
+
+    .chart-box{
+      flex:1;
+      min-width:280px;
+      background:white;
+      padding:10px;
+      border-radius:12px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .btn{
+      background:#ff7f0e;
       color:white;
       border:none;
       border-radius:6px;
-      padding:8px 16px;
+      padding:8px;
+      width:100%;
       margin-top:8px;
       cursor:pointer;
-      transition:0.3s;
-      display:block;
-      width:100%;
+      font-weight:bold;
     }
-    .btn-orange:hover {
-      background-color:#ff9500;
-      transform:translateY(-2px);
+
+    .btn:hover{
+      background:#ff9500;
     }
-    @media (max-width:768px){
-      .chart-container { flex-direction: column; }
+
+    .kpi{
+      font-size:1.8em;
+      font-weight:bold;
+      text-align:center;
+      margin:10px 0;
     }
+
+    .positive{ color:#16a34a; }
+    .negative{ color:#dc2626; }
   </style>
 </head>
+
 <body>
 
 <header class="topbar">
-  <div class="logo">FSGF en chiffres</div>
+  <div><strong>FSGF en chiffres</strong></div>
   <nav class="menu">
     <a href="index.html">Accueil</a>
     <a href="statistiques.html">Statistiques</a>
@@ -89,136 +116,216 @@
 </header>
 
 <main>
-  <h1>Vue globale - 2026</h1>
 
-  <!-- 1️⃣ Mini tableau -->
-  <section class="card">
-    <h2>Effectifs 2026 par Département / Niveau / Genre</h2>
-    <table id="miniTable">
-      <thead>
-        <tr>
-          <th>Département</th>
-          <th>Niveau</th>
-          <th>Genre</th>
-          <th>Effectifs</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
+<h1>Vue globale - <span id="lastYearLabel"></span></h1>
 
-  <!-- 2️⃣ Graphiques -->
-  <section class="chart-container" style="display:flex; flex-wrap:wrap; gap:20px;">
-    <div style="flex:1; min-width:300px;" class="card">
-      <canvas id="deptChart"></canvas>
-      <button class="btn-orange" onclick="exportChartPNG('deptChart')">Exporter PNG</button>
-    </div>
-    <div style="flex:1; min-width:300px;" class="card">
-      <canvas id="niveauChart"></canvas>
-      <button class="btn-orange" onclick="exportChartPNG('niveauChart')">Exporter PNG</button>
-    </div>
-    <div style="flex:1; min-width:300px;" class="card">
-      <canvas id="genreChart"></canvas>
-      <button class="btn-orange" onclick="exportChartPNG('genreChart')">Exporter PNG</button>
-    </div>
-  </section>
+<!-- KPI -->
+<section class="card">
+  <h2>Total Étudiants</h2>
+  <div class="kpi" id="totalStudents">0</div>
+  <div style="text-align:center;">
+    Variation vs <span id="prevYearLabel"></span> :
+    <strong id="variation"></strong>
+  </div>
+</section>
+
+<!-- TABLEAU CROISÉ -->
+<section class="card">
+  <h2>Effectifs <span id="tableYearLabel"></span></h2>
+  <table id="pivotTable">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- CHARTS -->
+<section class="charts">
+  <div class="chart-box">
+    <canvas id="deptChart"></canvas>
+    <button class="btn" onclick="exportPNG('deptChart')">Exporter PNG</button>
+  </div>
+
+  <div class="chart-box">
+    <canvas id="niveauChart"></canvas>
+    <button class="btn" onclick="exportPNG('niveauChart')">Exporter PNG</button>
+  </div>
+
+  <div class="chart-box">
+    <canvas id="genreChart"></canvas>
+    <button class="btn" onclick="exportPNG('genreChart')">Exporter PNG</button>
+  </div>
+</section>
+
 </main>
 
-<footer style="text-align:center; padding:15px; background:#1e3a8a; color:white;">
-  © 2026 FSGF en chiffres
+<footer style="text-align:center; padding:10px; background:#1e3a8a; color:white;">
+© FSGF en chiffres
 </footer>
 
 <script>
 let statsData = [];
+let deptChartObj, niveauChartObj, genreChartObj;
 
-// Charger Excel
 fetch('data/fsgf.xlsx')
   .then(res => res.arrayBuffer())
   .then(data => {
-    const workbook = XLSX.read(data, { type: "array" });
+    const workbook = XLSX.read(data, { type:"array" });
     const sheet = workbook.Sheets["Donnees"];
     statsData = XLSX.utils.sheet_to_json(sheet);
 
-    // Dernière année
-    const years = statsData.map(d=>Number(d.Année));
+    const years = statsData.map(d => Number(d.Année));
     const lastYear = Math.max(...years);
+    const prevYear = lastYear - 1;
 
-    const lastYearData = statsData.filter(d=>Number(d.Année)===lastYear);
+    document.getElementById("lastYearLabel").textContent = lastYear;
+    document.getElementById("tableYearLabel").textContent = lastYear;
+    document.getElementById("prevYearLabel").textContent = prevYear;
 
-    buildMiniTable(lastYearData);
-    buildCharts(lastYearData);
+    const lastYearData = statsData.filter(d => Number(d.Année) === lastYear);
+    const prevYearData = statsData.filter(d => Number(d.Année) === prevYear);
+
+    buildDashboard(lastYearData, prevYearData);
   });
 
-// 1️⃣ Mini tableau avec barres horizontales
-function buildMiniTable(data){
-  const tbody = document.querySelector("#miniTable tbody");
+function buildDashboard(current, previous){
+
+  const totalCurrent = current.reduce((s,d)=>s+Number(d.Effectifs),0);
+  const totalPrevious = previous.reduce((s,d)=>s+Number(d.Effectifs),0);
+
+  document.getElementById("totalStudents").textContent = totalCurrent;
+
+  let variationText = "N/A";
+  if(totalPrevious > 0){
+    const varPct = ((totalCurrent-totalPrevious)/totalPrevious*100).toFixed(1);
+    variationText = varPct + "%";
+    document.getElementById("variation").className = varPct >= 0 ? "positive" : "negative";
+  }
+  document.getElementById("variation").textContent = variationText;
+
+  buildPivotTable(current);
+  buildCharts(current);
+}
+
+function buildPivotTable(data){
+
+  const genres = [...new Set(data.map(d => d.Genre))].sort();
+  const pivot = {};
+
+  data.forEach(d => {
+    const dept = d.Département;
+    const niv = d.Niveau;
+    const gen = d.Genre;
+    const eff = Number(d.Effectifs);
+
+    if(!pivot[dept]) pivot[dept] = {};
+    if(!pivot[dept][niv]) pivot[dept][niv] = {};
+    if(!pivot[dept][niv][gen]) pivot[dept][niv][gen] = 0;
+
+    pivot[dept][niv][gen] += eff;
+  });
+
+  const thead = document.querySelector("#pivotTable thead");
+  const tbody = document.querySelector("#pivotTable tbody");
+
+  thead.innerHTML = "";
   tbody.innerHTML = "";
-  data.forEach(d=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${d.Département}</td>
-      <td>${d.Niveau}</td>
-      <td>${d.Genre}</td>
-      <td>
-        ${d.Effectifs}
-        <div class="bar" style="width:${Math.min(d.Effectifs*2,100)}%"></div>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
+
+  let headerRow = "<tr><th>Département</th><th>Niveau</th>";
+  genres.forEach(g => headerRow += `<th>${g}</th>`);
+  headerRow += "<th>Total</th></tr>";
+  thead.innerHTML = headerRow;
+
+  let grandTotals = {};
+  genres.forEach(g => grandTotals[g] = 0);
+  let grandTotalAll = 0;
+
+  for(const dept in pivot){
+
+    let deptTotals = {};
+    genres.forEach(g => deptTotals[g] = 0);
+    let deptTotalAll = 0;
+
+    for(const niv in pivot[dept]){
+
+      let row = "<tr>";
+      row += `<td><strong>${dept}</strong></td>`;
+      row += `<td>${niv}</td>`;
+
+      let rowTotal = 0;
+
+      genres.forEach(g => {
+        const val = pivot[dept][niv][g] || 0;
+        row += `<td>${val}</td>`;
+        rowTotal += val;
+
+        deptTotals[g] += val;
+        grandTotals[g] += val;
+      });
+
+      row += `<td><strong>${rowTotal}</strong></td></tr>`;
+      tbody.innerHTML += row;
+
+      deptTotalAll += rowTotal;
+      grandTotalAll += rowTotal;
+    }
+
+    let totalRow = `<tr style="background:#f1f5f9;">
+      <td colspan="2"><strong>Total ${dept}</strong></td>`;
+    genres.forEach(g => totalRow += `<td><strong>${deptTotals[g]}</strong></td>`);
+    totalRow += `<td><strong>${deptTotalAll}</strong></td></tr>`;
+
+    tbody.innerHTML += totalRow;
+  }
+
+  let grandRow = `<tr style="background:#1e3a8a; color:white;">
+    <td colspan="2"><strong>Total Général</strong></td>`;
+  genres.forEach(g => grandRow += `<td><strong>${grandTotals[g]}</strong></td>`);
+  grandRow += `<td><strong>${grandTotalAll}</strong></td></tr>`;
+
+  tbody.innerHTML += grandRow;
 }
 
-// 2️⃣ Graphiques
-let deptChartObj, niveauChartObj, genreChartObj;
 function buildCharts(data){
-  // Département
+
   const deptTotals = {};
-  data.forEach(d=>deptTotals[d.Département] = (deptTotals[d.Département]||0) + Number(d.Effectifs));
-  const deptLabels = Object.keys(deptTotals);
-  const deptData = Object.values(deptTotals);
-  const deptCtx = document.getElementById("deptChart").getContext("2d");
+  data.forEach(d => deptTotals[d.Département]=(deptTotals[d.Département]||0)+Number(d.Effectifs));
+
   if(deptChartObj) deptChartObj.destroy();
-  deptChartObj = new Chart(deptCtx, {
+  deptChartObj = new Chart(document.getElementById("deptChart"),{
     type:'bar',
-    data:{ labels:deptLabels, datasets:[{label:'Étudiants par Département', data:deptData, backgroundColor:'#ff7f0e'}] },
-    options:{ responsive:true, scales:{y:{beginAtZero:true}} }
+    data:{ labels:Object.keys(deptTotals),
+      datasets:[{data:Object.values(deptTotals), backgroundColor:'#ff7f0e'}]}
   });
 
-  // Niveau
   const niveauTotals = {};
-  data.forEach(d=>niveauTotals[d.Niveau]=(niveauTotals[d.Niveau]||0)+Number(d.Effectifs));
-  const niveauLabels = Object.keys(niveauTotals);
-  const niveauData = Object.values(niveauTotals);
-  const niveauCtx = document.getElementById("niveauChart").getContext("2d");
+  data.forEach(d => niveauTotals[d.Niveau]=(niveauTotals[d.Niveau]||0)+Number(d.Effectifs));
+
   if(niveauChartObj) niveauChartObj.destroy();
-  niveauChartObj = new Chart(niveauCtx, {
+  niveauChartObj = new Chart(document.getElementById("niveauChart"),{
     type:'pie',
-    data:{ labels:niveauLabels, datasets:[{label:'Étudiants par Niveau', data:niveauData, backgroundColor:['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd']}] },
-    options:{ responsive:true }
+    data:{ labels:Object.keys(niveauTotals),
+      datasets:[{data:Object.values(niveauTotals)}]}
   });
 
-  // Genre
   const genreTotals = {M:0,F:0};
-  data.forEach(d=>{ if(d.Genre==='M') genreTotals.M+=Number(d.Effectifs); else if(d.Genre==='F') genreTotals.F+=Number(d.Effectifs); });
-  const genreLabels = ['Masculin','Féminin'];
-  const genreData = [genreTotals.M, genreTotals.F];
-  const genreCtx = document.getElementById("genreChart").getContext("2d");
+  data.forEach(d=>{ if(d.Genre==='M') genreTotals.M+=Number(d.Effectifs); else genreTotals.F+=Number(d.Effectifs); });
+
   if(genreChartObj) genreChartObj.destroy();
-  genreChartObj = new Chart(genreCtx, {
+  genreChartObj = new Chart(document.getElementById("genreChart"),{
     type:'pie',
-    data:{ labels:genreLabels, datasets:[{label:'Étudiants par Genre', data:genreData, backgroundColor:['#1e90ff','#ff1493']}] },
-    options:{ responsive:true }
+    data:{ labels:['Masculin','Féminin'],
+      datasets:[{data:[genreTotals.M, genreTotals.F]}]}
   });
 }
 
-// 3️⃣ Export PNG
-function exportChartPNG(chartId){
-  const chartCanvas = document.getElementById(chartId);
+function exportPNG(id){
+  const canvas = document.getElementById(id);
   const link = document.createElement('a');
-  link.download = `${chartId}.png`;
-  link.href = chartCanvas.toDataURL("image/png",1);
+  link.download = id + ".png";
+  link.href = canvas.toDataURL();
   link.click();
 }
 </script>
+
 </body>
 </html>
