@@ -162,6 +162,18 @@ document.getElementById("exportPNG").addEventListener("click", function(){
   link.download = "effectifs_annuels.png";
   link.click();
 });
+  document.getElementById("exportAllCharts").addEventListener("click", function(){
+  const charts = ["deptChart", "niveauChart", "genreChart"];
+  charts.forEach(id => {
+    const canvas = document.getElementById(id);
+    if(canvas){
+      const link = document.createElement('a');
+      link.download = id + ".png";
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+  });
+});
 </script>
 </body>
 </html>
