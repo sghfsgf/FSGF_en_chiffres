@@ -3,20 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Favicons -->
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/favicon-512x512.png">
-
-<!-- Manifest pour PWA -->
-<link rel="manifest" href="/manifest.json">
   <title>FSGF en chiffres - Statistiques</title>
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="stylesheet" href="CSS/style.css">
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-</head>
-<body>
 
+  <style>
+    body{ font-family: Arial, sans-serif; background:#f4f6f9; margin:0; color:#0f172a; }
+    .topbar{ display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:#ff6b00; color:white; }
+    .menu a{ color:white; text-decoration:none; margin-left:15px; font-weight:500; }
+    main{ padding:20px; }
+    h1,h2{text-align:center;}
+    .card{ background:white; border-radius:12px; padding:15px; box-shadow:0 6px 18px rgba(0,0,0,0.08); margin-bottom:20px; }
+    section#selection{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; margin-bottom:20px; }
+    select, button{ padding:6px; border-radius:6px; border:1px solid #ddd; margin:2px; }
+    button#applySelection, button#exportExcel{ background:#ff7f0e; color:white; border:none; cursor:pointer; font-weight:bold; }
+    button#applySelection:hover, button#exportExcel:hover{ background:#ff9500; }
+    table{ width:100%; border-collapse:collapse; margin-top:10px; background:white; }
+    th,td{ border:1px solid #ddd; padding:6px; text-align:center; }
+    th{ background:#e2e8f0; }
+    footer{ text-align:center; padding:10px; background:#000; color:white; }
+  </style>
+</head>
+
+<body>
 <header class="topbar">
   <div class="logo">FSGF en chiffres</div>
   <nav class="menu">
@@ -59,9 +70,7 @@
   </section>
 </main>
 
-<footer>
-  © 2026 FSGF en chiffres
-</footer>
+<footer>© 2026 FSGF en chiffres</footer>
 
 <script>
 let statsData = [];
@@ -78,7 +87,6 @@ fetch('data/fsgf.xlsx')
   })
   .catch(() => console.log("Aucun fichier Excel trouvé (normal au début)"));
 
-// Initialiser les listes déroulantes avec "Tous"
 function initSelections() {
   const years = [...new Set(statsData.map(d => d.Année))].sort((a,b) => b-a);
   const depts = [...new Set(statsData.map(d => d.Département))];
@@ -102,7 +110,6 @@ function initSelections() {
   genres.forEach(g => genreSelect.innerHTML += `<option value="${g}">${g}</option>`);
 }
 
-// Mettre à jour le tableau selon la sélection
 function updateTable() {
   const year = document.getElementById("yearSelect").value;
   const dept = document.getElementById("deptSelect").value;
@@ -110,14 +117,12 @@ function updateTable() {
   const genre = document.getElementById("genreSelect").value;
 
   let filtered = statsData;
-
   if(year) filtered = filtered.filter(d => d.Année == year);
   if(dept) filtered = filtered.filter(d => d.Département == dept);
   if(niveau) filtered = filtered.filter(d => d.Niveau == niveau);
   if(genre) filtered = filtered.filter(d => d.Genre == genre);
 
   const tableContainer = document.getElementById("tableContainer");
-
   if(filtered.length === 0){
     tableContainer.innerHTML = "<p>Aucun résultat à afficher</p>";
     return;
@@ -151,10 +156,8 @@ function updateTable() {
   tableContainer.innerHTML = html;
 }
 
-// Bouton Afficher
 document.getElementById("applySelection").addEventListener("click", updateTable);
 
-// Export Excel
 document.getElementById("exportExcel").addEventListener("click", function(){
   const table = document.querySelector("#tableContainer table");
   if(!table) return alert("Aucun résultat à exporter");
@@ -164,13 +167,6 @@ document.getElementById("exportExcel").addEventListener("click", function(){
   XLSX.utils.book_append_sheet(wb, ws, "Résultats");
   XLSX.writeFile(wb, "FSGF_Statistiques.xlsx");
 });
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/worker.js')
-    .then(() => console.log('Service Worker enregistré'))
-    .catch(err => console.log('Erreur SW:', err));
-}
 </script>
 </body>
 </html>
