@@ -165,6 +165,12 @@ document.getElementById("exportExcel").addEventListener("click", function(){
   XLSX.writeFile(wb, "FSGF_Statistiques.xlsx");
 });
 </script>
-
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/worker.js')
+    .then(() => console.log('Service Worker enregistré'))
+    .catch(err => console.log('Erreur SW:', err));
+}
+</script>
 </body>
 </html>
