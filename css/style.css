@@ -353,3 +353,15 @@ footer {
   background-color: #ff9500; /* orange plus clair au survol */
   transform: translateY(-2px);
 }
+.btn-orange {
+  background:#ff7f0e;
+  color:white;
+  border:none;
+  border-radius:6px;
+  padding:8px 12px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.btn-orange:hover {
+  background:#ff9500;
+}
