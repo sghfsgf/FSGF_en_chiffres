@@ -82,7 +82,7 @@ h1, h2, h3 {
 }
 
 .topbar .logo {
-  font-size: 2.2em;
+  font-size: 2.5em;
   font-weight: bold;
 }
 
@@ -414,6 +414,6 @@ footer {
 }
 /* Taille des liens dans le menu principal */
 nav.navbar ul li a {
-  font-size: 2em; /* tu peux changer 1.6em à 2em ou plus */
+  font-size: 2.2em; /* tu peux changer 1.6em à 2em ou plus */
   font-weight: 500; /* rend le texte un peu plus épais */
 }
