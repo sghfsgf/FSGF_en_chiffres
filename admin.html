@@ -223,6 +223,13 @@ function clearForm(){
   document.getElementById("effectifs").value="";
 }
 </script>
+<script>
+  const hamburger = document.getElementById("hamburger");
+  const navLinks = document.getElementById("nav-links");
 
+  hamburger.addEventListener("click", () => {
+    navLinks.classList.toggle("nav-active");
+  });
+</script>
 </body>
 </html>
