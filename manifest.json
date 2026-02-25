@@ -1,6 +1,6 @@
 {
   "name": "FSGF en chiffres",
-  "short_name": "FSGF",
+  "short_name": "FSGF et chiffres",
   "start_url": "index.html",
   "scope": "./",
   "display": "standalone",
