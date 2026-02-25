@@ -365,3 +365,44 @@ footer {
 .btn-orange:hover {
   background:#ff9500;
 }
+.navbar {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+/* Les 3 traits */
+.hamburger {
+  cursor: pointer;
+  flex-direction: column;
+  gap: 5px;
+  display: flex;
+}
+
+.hamburger span {
+  width: 30px;
+  height: 4px;
+  background-color: black;
+}
+
+/* Les liens masqués au départ */
+.nav-links {
+  display: none;
+  list-style: none;
+  padding-left: 0;
+  margin-top: 10px;
+}
+
+.nav-links li {
+  margin: 8px 0;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: black;
+  font-size: 18px;
+}
+
+.nav-active {
+  display: block;
+}
