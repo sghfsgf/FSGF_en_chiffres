@@ -31,7 +31,6 @@
 <header class="topbar">
   <div class="logo">FSGF en chiffres</div>
 
-  <!-- Menu hamburger responsive -->
   <nav class="navbar">
     <div id="hamburger" class="hamburger">
       <span></span>
@@ -51,7 +50,6 @@
 <main>
   <h1>Statistiques des étudiants</h1>
 
-  <!-- Section Sélection -->
   <section id="selection">
     <h2>Sélection</h2>
 
@@ -64,13 +62,16 @@
     <label for="niveauSelect">Niveau :</label>
     <select id="niveauSelect"></select>
 
+    <!-- ✅ AJOUT FILIÈRE -->
+    <label for="filiereSelect">Filière :</label>
+    <select id="filiereSelect"></select>
+
     <label for="genreSelect">Genre :</label>
     <select id="genreSelect"></select>
 
     <button id="applySelection">Afficher</button>
   </section>
 
-  <!-- Section Affichage des Résultats -->
   <section id="resultats" class="card">
     <h2>Affichage des Résultats</h2>
     <div id="tableContainer">
@@ -85,7 +86,6 @@
 <script>
 let statsData = [];
 
-// Charger le fichier Excel
 fetch('data/fsgf.xlsx?t=' + new Date().getTime())
   .then(res => res.arrayBuffer())
   .then(data => {
@@ -95,12 +95,13 @@ fetch('data/fsgf.xlsx?t=' + new Date().getTime())
     statsData = XLSX.utils.sheet_to_json(sheet);
     initSelections();
   })
-  .catch(() => console.log("Aucun fichier Excel trouvé (normal au début)"));
+  .catch(() => console.log("Aucun fichier Excel trouvé"));
 
 function initSelections() {
   const years = [...new Set(statsData.map(d => d.Année))].sort((a,b) => b-a);
   const depts = [...new Set(statsData.map(d => d.Département))];
   const niveaux = [...new Set(statsData.map(d => d.Niveau))];
+  const filieres = [...new Set(statsData.map(d => d.Filière))]; // ✅ AJOUT
   const genres = [...new Set(statsData.map(d => d.Genre))];
 
   const yearSelect = document.getElementById("yearSelect");
@@ -115,6 +116,10 @@ function initSelections() {
   niveauSelect.innerHTML = `<option value="">Tous</option>`;
   niveaux.forEach(n => niveauSelect.innerHTML += `<option value="${n}">${n}</option>`);
 
+  const filiereSelect = document.getElementById("filiereSelect"); // ✅ AJOUT
+  filiereSelect.innerHTML = `<option value="">Tous</option>`;
+  filieres.forEach(f => filiereSelect.innerHTML += `<option value="${f}">${f}</option>`);
+
   const genreSelect = document.getElementById("genreSelect");
   genreSelect.innerHTML = `<option value="">Tous</option>`;
   genres.forEach(g => genreSelect.innerHTML += `<option value="${g}">${g}</option>`);
@@ -125,12 +130,14 @@ function updateTable() {
   const dept = document.getElementById("deptSelect").value;
   const niveau = document.getElementById("niveauSelect").value;
   const genre = document.getElementById("genreSelect").value;
+  const filiere = document.getElementById("filiereSelect").value; // ✅ AJOUT
 
   let filtered = statsData;
   if(year) filtered = filtered.filter(d => d.Année == year);
   if(dept) filtered = filtered.filter(d => d.Département == dept);
   if(niveau) filtered = filtered.filter(d => d.Niveau == niveau);
   if(genre) filtered = filtered.filter(d => d.Genre == genre);
+  if(filiere) filtered = filtered.filter(d => d.Filière == filiere); // ✅ AJOUT
 
   const tableContainer = document.getElementById("tableContainer");
   if(filtered.length === 0){
@@ -178,13 +185,15 @@ document.getElementById("exportExcel").addEventListener("click", function(){
   XLSX.writeFile(wb, "FSGF_Statistiques.xlsx");
 });
 </script>
-  <script>
-  const hamburger = document.getElementById("hamburger");
-  const navLinks = document.getElementById("nav-links");
 
-  hamburger.addEventListener("click", () => {
-    navLinks.classList.toggle("nav-active");
-  });
+<script>
+const hamburger = document.getElementById("hamburger");
+const navLinks = document.getElementById("nav-links");
+
+hamburger.addEventListener("click", () => {
+  navLinks.classList.toggle("nav-active");
+});
 </script>
+
 </body>
 </html>
