@@ -1,3 +1,18 @@
+/* Menu hamburger : trois barres visibles */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.hamburger span {
+  width: 30px;                /* largeur visible */
+  height: 4px;                /* épaisseur visible */
+  background-color: #000;     /* couleur sombre */
+}
+
 /* ⭐ MENU HAMBURGER — icône 3 traits */
 .hamburger {
   display: flex;                /* Permet de positionner les 3 traits */
