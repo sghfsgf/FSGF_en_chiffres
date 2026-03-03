@@ -1,23 +1,43 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff6b00">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ff6b00">
-  <link rel="manifest" href="manifest.json">
+  <title>FSGF en chiffres - Vue globale</title>
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="stylesheet" href="CSS/style.css">
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <title>FSGF en chiffres - Vue globale</title>
+
+  <style>
+    body{ font-family: Arial, sans-serif; background:#f4f6f9; margin:0; color:#0f172a; }
+    .topbar{ display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:#ff6b00; color:white; }
+    .menu a{ color:white; text-decoration:none; margin-left:15px; font-weight:500; }
+    main{ padding:20px; }
+    h1,h2{text-align:center;}
+    .card{ background:white; border-radius:12px; padding:15px; box-shadow:0 6px 18px rgba(0,0,0,0.08); margin-bottom:20px; }
+    table{ width:100%; border-collapse:collapse; margin-top:10px; background:white; }
+    th,td{ border:1px solid #ddd; padding:6px; text-align:center; }
+    th{ background:#e2e8f0; }
+    .charts{ display:flex; flex-wrap:wrap; gap:20px; }
+    .chart-box{ flex:1; min-width:280px; background:white; padding:10px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); }
+    .btn{ background:#ff7f0e; color:white; border:none; border-radius:6px; padding:8px; width:100%; margin-top:8px; cursor:pointer; font-weight:bold; }
+    .btn:hover{ background:#ff9500; }
+    .kpi{ font-size:1.8em; font-weight:bold; text-align:center; margin:10px 0; }
+    .positive{ color:#16a34a; }
+    .negative{ color:#dc2626; }
+    footer{ text-align:center; padding:10px; background:#000; color:white; }
+  </style>
 </head>
 <body>
 
 <header class="topbar">
   <div class="logo">FSGF en chiffres</div>
 
-  <!-- Hamburger -->
+  <!-- Menu hamburger responsive -->
   <nav class="navbar">
     <div id="hamburger" class="hamburger">
       <span></span>
@@ -46,7 +66,7 @@
     </div>
   </section>
 
-  <!-- Tableau croisé -->
+  <!-- TABLEAU CROISÉ -->
   <section class="card">
     <h2>Effectifs <span id="tableYearLabel"></span></h2>
     <table id="pivotTable">
@@ -55,7 +75,7 @@
     </table>
   </section>
 
-  <!-- Graphiques -->
+  <!-- CHARTS -->
   <section class="charts">
     <div class="chart-box">
       <canvas id="deptChart"></canvas>
@@ -77,7 +97,6 @@
 <footer>© 2026 FSGF en chiffres</footer>
 
 <script>
-/* ===== Chargement des données Excel et dashboard ===== */
 let statsData=[], deptChartObj, niveauChartObj, genreChartObj;
 
 fetch('data/fsgf.xlsx?t=' + new Date().getTime())
@@ -187,20 +206,19 @@ function exportPNG(id){
   link.href=canvas.toDataURL();
   link.click();
 }
+</script>
+<script>
+  const hamburger = document.getElementById("hamburger");
+  const navLinks = document.getElementById("nav-links");
 
-/* ===== Hamburger responsive ===== */
-const hamburger = document.getElementById("hamburger");
-const navLinks = document.getElementById("nav-links");
-hamburger.addEventListener("click", () => {
-  navLinks.classList.toggle("nav-active"); // affiche menu mobile
-  hamburger.classList.toggle("active");    // anime hamburger → X
-});
-
-/* ===== Service Worker PWA ===== */
+  hamburger.addEventListener("click", () => {
+    navLinks.classList.toggle("nav-active");
+  });
+</script>
+<script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
 }
 </script>
-
 </body>
 </html>
