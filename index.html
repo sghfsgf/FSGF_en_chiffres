@@ -249,30 +249,12 @@ function buildCharts(data){
     data.forEach(d=>deptTotals[d.Département]=(deptTotals[d.Département]||0)+Number(d.Effectifs));
     if(deptChartObj) deptChartObj.destroy();
    deptChartObj = new Chart(document.getElementById("deptChart"), {
-    type: 'bar',
-    data: {
-        labels: Object.keys(deptTotals), // les noms des départements
-        datasets: [{
-            label: 'Effectifs par Département', // ← titre du dataset
-            data: Object.values(deptTotals),
-            backgroundColor: '#ff7f0e'
-        }]
-    },
-    options: {
-        plugins: {
-            title: {
-                display: true,
-                text: 'Effectifs par Département', // ← titre au-dessus du graphique
-                font: {
-                    size: 18
-                }
-            }
-        },
-        responsive: true,
-        maintainAspectRatio: false
-    }
-});
-
+        type:'bar',
+        data:{
+            labels:Object.keys(deptTotals),
+            datasets:[{data:Object.values(deptTotals), backgroundColor:'#ff7f0e'}]
+        }
+    });
     const niveauTotals={};
     data.forEach(d=>niveauTotals[d.Niveau]=(niveauTotals[d.Niveau]||0)+Number(d.Effectifs));
     if(niveauChartObj) niveauChartObj.destroy();
