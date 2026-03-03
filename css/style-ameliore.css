@@ -68,3 +68,26 @@ nav.navbar ul li a {
         font-size: 1.1em; /* liens plus petits sur mobile */
     }
 }
+/* MENU PRINCIPAL - affichage horizontal par défaut */
+.nav-links {
+    display: flex;           /* lien horizontal */
+    flex-direction: row;     /* ligne horizontale */
+    gap: 20px;               /* espace entre les liens */
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+/* Quand on clique sur hamburger, menu responsive sur petit écran */
+@media (max-width: 768px) {
+    .nav-links {
+        flex-direction: column; /* vertical pour mobile */
+        display: none;          /* caché par défaut */
+        gap: 10px;
+        width: 100%;
+        margin-top: 10px;
+    }
+    .nav-links.nav-active {
+        display: flex;          /* s'affiche vertical sur mobile quand actif */
+    }
+}
