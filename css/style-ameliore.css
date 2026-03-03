@@ -68,3 +68,22 @@ nav.navbar ul li a {
         font-size: 1.1em; /* liens plus petits sur mobile */
     }
 }
+/* Conteneur de cartes pour alignement horizontal sur grand écran, vertical sur petit écran */
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Chaque carte prend 100% sur mobile et largeur automatique sur grand écran */
+.cards-container > .card,
+.cards-container > .chart-box {
+    flex: 1 1 300px; /* min-width 300px pour mobile, flex-grow 1 pour s'étendre */
+}
+
+/* Responsive : pour petits écrans, empile en colonne */
+@media (max-width: 768px) {
+    .cards-container {
+        flex-direction: column;
+    }
+}
