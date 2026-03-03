@@ -112,26 +112,33 @@
 
 <main>
     <h1>Vue globale - <span id="lastYearLabel"></span></h1>
-    <!-- KPI -->
-    <section class="card">
-        <h2>Total Étudiants</h2>
-        <div class="kpi" id="totalStudents">0</div>
-        <div style="text-align:center;">
-            Variation vs <span id="prevYearLabel"></span> : <strong id="variation"></strong>
-        </div>
-    </section>
 
-    <!-- TABLEAU CROISÉ -->
-    <section class="card">
-        <h2>Effectifs <span id="tableYearLabel"></span></h2>
-        <table id="pivotTable">
-            <thead></thead>
-            <tbody></tbody>
-        </table>
-    </section>
+    <!-- KPI et filtres regroupés dans un conteneur pour affichage horizontal/vertical -->
+    <div class="cards-container">
+        <!-- KPI -->
+        <section class="card">
+            <h2>Total Étudiants</h2>
+            <div class="kpi" id="totalStudents">0</div>
+            <div style="text-align:center;">
+                Variation vs <span id="prevYearLabel"></span> : <strong id="variation"></strong>
+            </div>
+        </section>
+        <!-- Ici tu pourras ajouter des filtres ou autres cartes si nécessaire -->
+    </div>
 
-    <!-- CHARTS -->
-    <section class="charts">
+    <!-- Tableau croisé -->
+    <div class="cards-container">
+        <section class="card">
+            <h2>Effectifs <span id="tableYearLabel"></span></h2>
+            <table id="pivotTable">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="cards-container">
         <div class="chart-box">
             <canvas id="deptChart"></canvas>
             <button class="btn" onclick="exportPNG('deptChart')">Exporter PNG</button>
@@ -144,7 +151,7 @@
             <canvas id="genreChart"></canvas>
             <button class="btn" onclick="exportPNG('genreChart')">Exporter PNG</button>
         </div>
-    </section>
+    </div>
 </main>
 
 <footer>© 2026 FSGF en chiffres</footer>
