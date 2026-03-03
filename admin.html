@@ -55,65 +55,70 @@
 <main>
 
   <!-- LOGIN -->
-  <section class="card" id="loginBox">
-    <h2>Accès Administration</h2>
-    <label>Mot de passe</label>
-    <input type="password" id="passwordInput">
-    <button id="loginBtn">Entrer</button>
-  </section>
+  <div class="cards-container" style="justify-content:center;">
+    <section class="card" id="loginBox">
+      <h2>Accès Administration</h2>
+      <label>Mot de passe</label>
+      <input type="password" id="passwordInput">
+      <button id="loginBtn">Entrer</button>
+    </section>
+  </div>
 
   <!-- ADMIN -->
   <div id="adminPanel" style="display:none;">
     <h1>Administration des Statistiques</h1>
 
     <!-- FORMULAIRE AJOUT / MODIF -->
-    <section class="card">
-      <h2>Ajouter / Modifier un enregistrement</h2>
-      <input type="hidden" id="editIndex">
+    <div class="cards-container">
+      <section class="card">
+        <h2>Ajouter / Modifier un enregistrement</h2>
+        <input type="hidden" id="editIndex">
 
-      <label>Année</label>
-      <input type="number" id="annee">
+        <label>Année</label>
+        <input type="number" id="annee">
 
-      <label>Département</label>
-      <input type="text" id="departement">
+        <label>Département</label>
+        <input type="text" id="departement">
 
-      <label>Niveau</label>
-      <select id="niveau">
-        <option value="L1">L1</option>
-        <option value="L2">L2</option>
-        <option value="L3">L3</option>
-        <option value="M1">M1</option>
-        <option value="M2">M2</option>
-      </select>
+        <label>Niveau</label>
+        <select id="niveau">
+          <option value="L1">L1</option>
+          <option value="L2">L2</option>
+          <option value="L3">L3</option>
+          <option value="M1">M1</option>
+          <option value="M2">M2</option>
+        </select>
 
-      <label>Filière</label>
-      <input type="text" id="filiere">
+        <label>Filière</label>
+        <input type="text" id="filiere">
 
-      <label>Genre</label>
-      <select id="genre">
-        <option value="Masculin">Masculin</option>
-        <option value="Féminin">Féminin</option>
-      </select>
+        <label>Genre</label>
+        <select id="genre">
+          <option value="Masculin">Masculin</option>
+          <option value="Féminin">Féminin</option>
+        </select>
 
-      <label>Effectifs</label>
-      <input type="number" id="effectifs">
+        <label>Effectifs</label>
+        <input type="number" id="effectifs">
 
-      <div style="text-align:center; margin-top:10px;">
-        <button id="saveBtn">Enregistrer</button>
-        <button id="exportBtn">Télécharger Excel</button>
-        <input type="file" id="importFile" accept=".xlsx">
-        <button id="importBtn">Importer Excel</button>
-      </div>
-    </section>
+        <div style="text-align:center; margin-top:10px;">
+          <button id="saveBtn">Enregistrer</button>
+          <button id="exportBtn">Télécharger Excel</button>
+          <input type="file" id="importFile" accept=".xlsx">
+          <button id="importBtn">Importer Excel</button>
+        </div>
+      </section>
+    </div>
 
     <!-- TABLEAU EXISTANT -->
-    <section class="card">
-      <h2>Données existantes</h2>
-      <div id="tableContainer"></div>
-    </section>
+    <div class="cards-container">
+      <section class="card">
+        <h2>Données existantes</h2>
+        <div id="tableContainer"></div>
+      </section>
+    </div>
   </div>
 </main>
-
 <footer>© 2026 FSGF en chiffres</footer>
 
 <script>
