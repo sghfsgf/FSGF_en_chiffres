@@ -54,7 +54,7 @@ html {
 
 /* Taille des liens du menu principal */
 nav.navbar ul li a {
-    font-size: 1.4em; /* réduit par rapport à 2.8em */
+    font-size: 1.5em; /* réduit par rapport à 2.8em */
     font-weight: 600; 
     line-height: 1.2; 
 }
