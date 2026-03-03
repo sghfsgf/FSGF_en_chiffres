@@ -51,38 +51,43 @@
 
 <main>
   <h1>Comparaisons</h1>
- <!-- BOUTON EXPORT + SÉLECTION ANNÉE -->
-<div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
-  
-  <!-- Bouton orange pour exporter les 3 graphiques -->
-  <button id="exportAllCharts" class="btn-orange">
-    Exporter les 3 graphiques
-  </button>
 
-  <!-- Sélecteur d'année -->
-  <label for="yearFilter" style="margin:0;">Sélectionner une année :</label>
-  <select id="yearFilter"></select>
+  <!-- Conteneur pour bouton et sélection -->
+  <div class="cards-container" style="align-items:center;">
+    <!-- Bouton orange pour exporter les 3 graphiques -->
+    <div class="card" style="flex:1; min-width:200px;">
+      <button id="exportAllCharts" class="btn-orange">
+        Exporter les 3 graphiques
+      </button>
+    </div>
 
-</div>
+    <!-- Sélecteur d'année -->
+    <div class="card" style="flex:1; min-width:200px;">
+      <label for="yearFilter" style="margin:0;">Sélectionner une année :</label>
+      <select id="yearFilter"></select>
+    </div>
+  </div>
 
   <!-- Graphiques existants -->
-  <section style="display:flex; flex-wrap: wrap; gap:20px; justify-content:center; margin-top:20px;">
-    <div style="flex:1; min-width:300px;">
+  <div class="cards-container">
+    <div class="card">
       <canvas id="deptChart"></canvas>
     </div>
-    <div style="flex:1; min-width:300px;">
+    <div class="card">
       <canvas id="niveauChart"></canvas>
     </div>
-    <div style="flex:1; min-width:300px;">
+    <div class="card">
       <canvas id="genreChart"></canvas>
     </div>
-  </section>
+  </div>
 
   <!-- Courbe annuelle -->
-  <h2 style="margin-top:40px;">Évolution Annuelle des Effectifs</h2>
-  <div style="width:100%; max-width:900px; margin:auto; text-align:center;">
-    <canvas id="totalYearChart"></canvas>
-    <button id="exportPNG">Exporter en PNG</button>
+  <div class="cards-container" style="margin-top:40px; justify-content:center;">
+    <div class="card" style="width:100%; max-width:900px; text-align:center;">
+      <h2>Évolution Annuelle des Effectifs</h2>
+      <canvas id="totalYearChart"></canvas>
+      <button id="exportPNG">Exporter en PNG</button>
+    </div>
   </div>
 </main>
 
