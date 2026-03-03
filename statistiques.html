@@ -51,35 +51,40 @@
 <main>
   <h1>Statistiques des étudiants</h1>
 
-  <section id="selection">
-    <h2>Sélection</h2>
+  <!-- Conteneur pour filtres et résultats -->
+  <div class="cards-container">
+    <!-- Sélection / filtres -->
+    <section id="selection" class="card">
+      <h2>Sélection</h2>
 
-    <label for="yearSelect">Année :</label>
-    <select id="yearSelect"></select>
+      <label for="yearSelect">Année :</label>
+      <select id="yearSelect"></select>
 
-    <label for="deptSelect">Département :</label>
-    <select id="deptSelect"></select>
+      <label for="deptSelect">Département :</label>
+      <select id="deptSelect"></select>
 
-    <label for="niveauSelect">Niveau :</label>
-    <select id="niveauSelect"></select>
+      <label for="niveauSelect">Niveau :</label>
+      <select id="niveauSelect"></select>
 
-    <!-- ✅ AJOUT FILIÈRE -->
-    <label for="filiereSelect">Filière :</label>
-    <select id="filiereSelect"></select>
+      <!-- ✅ AJOUT FILIÈRE -->
+      <label for="filiereSelect">Filière :</label>
+      <select id="filiereSelect"></select>
 
-    <label for="genreSelect">Genre :</label>
-    <select id="genreSelect"></select>
+      <label for="genreSelect">Genre :</label>
+      <select id="genreSelect"></select>
 
-    <button id="applySelection">Afficher</button>
-  </section>
+      <button id="applySelection">Afficher</button>
+    </section>
 
-  <section id="resultats" class="card">
-    <h2>Affichage des Résultats</h2>
-    <div id="tableContainer">
-      <p>Aucun résultat à afficher</p>
-    </div>
-    <button id="exportExcel">Exporter en Excel</button>
-  </section>
+    <!-- Résultats / tableau -->
+    <section id="resultats" class="card">
+      <h2>Affichage des Résultats</h2>
+      <div id="tableContainer">
+        <p>Aucun résultat à afficher</p>
+      </div>
+      <button id="exportExcel">Exporter en Excel</button>
+    </section>
+  </div>
 </main>
 
 <footer>© 2026 FSGF en chiffres</footer>
