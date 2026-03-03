@@ -44,3 +44,27 @@ html {
 .nav-links li a.active {
     border-bottom: 2px solid white;
 }
+/* ===== AJUSTEMENT LOGO ET LIENS DU MENU PRINCIPAL ===== */
+
+/* Taille du logo dans la topbar */
+.topbar .logo {
+    font-size: 1.2em; /* taille plus compacte que 3em */
+    font-weight: bold; 
+}
+
+/* Taille des liens du menu principal */
+nav.navbar ul li a {
+    font-size: 1.0em; /* réduit par rapport à 2.8em */
+    font-weight: 600; 
+    line-height: 1.2; 
+}
+
+/* Ajustement responsive pour mobile */
+@media (max-width: 768px) {
+    .topbar .logo {
+        font-size: 1.5em; /* logo plus petit sur mobile */
+    }
+    nav.navbar ul li a {
+        font-size: 1.1em; /* liens plus petits sur mobile */
+    }
+}
