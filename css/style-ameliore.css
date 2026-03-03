@@ -48,13 +48,13 @@ html {
 
 /* Taille du logo dans la topbar */
 .topbar .logo {
-    font-size: 1.2em; /* taille plus compacte que 3em */
+    font-size: 1.6em; /* taille plus compacte que 3em */
     font-weight: bold; 
 }
 
 /* Taille des liens du menu principal */
 nav.navbar ul li a {
-    font-size: 1.0em; /* réduit par rapport à 2.8em */
+    font-size: 1.4em; /* réduit par rapport à 2.8em */
     font-weight: 600; 
     line-height: 1.2; 
 }
