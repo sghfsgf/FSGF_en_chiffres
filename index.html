@@ -113,8 +113,9 @@
 <main>
   <h1>Vue globale - <span id="lastYearLabel"></span></h1>
 
-  <!-- KPI -->
+  <!-- KPI + Tableau croisé regroupés pour affichage horizontal sur PC -->
   <div class="cards-container">
+    <!-- KPI -->
     <section class="card">
       <h2>Total Étudiants</h2>
       <div class="kpi" id="totalStudents">0</div>
@@ -122,10 +123,8 @@
         Variation vs <span id="prevYearLabel"></span> : <strong id="variation"></strong>
       </div>
     </section>
-  </div>
 
-  <!-- Tableau croisé -->
-  <div class="cards-container">
+    <!-- Tableau croisé -->
     <section class="card">
       <h2>Effectifs <span id="tableYearLabel"></span></h2>
       <table id="pivotTable">
@@ -151,7 +150,6 @@
     </div>
   </div>
 </main>
-
 <footer>© 2026 FSGF en chiffres</footer>
 
 <script>
