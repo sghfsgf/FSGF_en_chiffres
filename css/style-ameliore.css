@@ -1,0 +1,46 @@
+/* style-ameliore.css */
+
+/* Menu hamburger : transition */
+.hamburger span {
+    transition: 0.3s;
+}
+.nav-links.nav-active {
+    transition: all 0.3s ease;
+}
+
+/* Ombre plus prononcée sur les cartes */
+.card {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* Effet hover sur les boutons */
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Tableau pivot scrollable sur mobile */
+#pivotTable {
+    display: block;
+    overflow-x: auto;
+}
+
+/* Graphiques : padding et min-width */
+.chart-box {
+    min-width: 300px;
+    padding: 15px;
+}
+
+/* Footer arrondi */
+footer {
+    border-radius: 12px 12px 0 0;
+}
+
+/* Smooth scroll pour la page */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Page active menu */
+.nav-links li a.active {
+    border-bottom: 2px solid white;
+}
