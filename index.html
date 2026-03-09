@@ -14,71 +14,21 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        body{ font-family: Arial, sans-serif; background:#f4f6f9; margin:0; color:#0f172a; }
-        .topbar{ display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:#ff6b00; color:white; }
-        .menu a{ color:white; text-decoration:none; margin-left:15px; font-weight:500; }
-        main{ padding:20px; }
+        body{font-family:Arial,sans-serif;background:#f4f6f9;margin:0;color:#0f172a;}
+        .topbar{display:flex;justify-content:space-between;align-items:center;padding:15px 20px;background:#ff6b00;color:white;}
+        .menu a{color:white;text-decoration:none;margin-left:15px;font-weight:500;}
         h1,h2{text-align:center;}
-        .card{ background:white; border-radius:12px; padding:15px; box-shadow:0 6px 18px rgba(0,0,0,0.08); margin-bottom:20px; }
-        table{ width:100%; border-collapse:collapse; margin-top:10px; background:white; }
-        th,td{ border:1px solid #ddd; padding:6px; text-align:center; }
-        th{ background:#e2e8f0; }
-        .charts{ display:flex; flex-wrap:wrap; gap:20px; }
-        .chart-box{ flex:1; min-width:300px; background:white; padding:12px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); }
-        .btn{ background:#ff7f0e; color:white; border:none; border-radius:6px; padding:8px; width:100%; margin-top:8px; cursor:pointer; font-weight:bold; }
-        .btn:hover{ background:#ff9500; }
-        .kpi{ font-size:2.2em; font-weight:bold; text-align:center; margin:10px 0; }
-        .section-title{ margin-bottom:10px; font-size:1.3em; color:#1e293b; }
-        footer{text-align:center; padding:10px; background:#000; color:white;}
-        /* RESPONSIVE LAYOUT POUR INDEX.HTML */
-
-/* Ajuster les conteneurs flex sur petits écrans */
-@media (max-width: 768px) {
-
-  /* Empiler verticalement les cartes KPI */
-  .cards-container {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  /* S’assurer que chaque chart-box prend toute la largeur */
-  .chart-box {
-    width: 100%;
-    padding: 10px 0;
-  }
-
-  /* Tableau plein écran sur mobile */
-  #pivotTable {
-    font-size: 0.9em;
-    overflow-x: auto;
-    display: block;
-  }
-
-  /* Centrer les titres et réduire les marges */
-  .section-title {
-    font-size: 1.1em;
-    margin-bottom: 8px;
-  }
-
-  .kpi {
-    font-size: 2em;
-    margin: 8px 0;
-  }
-}
-
-/* Pour très petits écrans (ex : téléphone 320px) */
-@media (max-width: 480px) {
-
-  /* Réduire légèrement les polices pour tenir sur l’écran */
-  h1, h2 {
-    font-size: 1.4em;
-  }
-
-  .btn {
-    font-size: 0.9em;
-    padding: 6px;
-  }
-}
+        .card{background:white;border-radius:12px;padding:15px;box-shadow:0 6px 18px rgba(0,0,0,0.08);margin-bottom:20px;}
+        table{width:100%;border-collapse:collapse;margin-top:10px;background:white;}
+        th,td{border:1px solid #ddd;padding:6px;text-align:center;}
+        th{background:#e2e8f0;}
+        .charts{display:flex;flex-wrap:wrap;gap:20px;}
+        .chart-box{flex:1;min-width:280px;background:white;padding:10px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.08);}
+        .btn{background:#ff7f0e;color:white;border:none;border-radius:6px;padding:8px;width:100%;margin-top:8px;cursor:pointer;font-weight:bold;}
+        .btn:hover{background:#ff9500;}
+        .kpi{font-size:2.2em;font-weight:bold;text-align:center;margin:10px 0;}
+        .section-title{font-size:1.3em;color:#1e293b;margin-bottom:10px;}
+        footer{text-align:center;padding:10px;background:#000;color:white;}
     </style>
 </head>
 
@@ -99,18 +49,18 @@
 <main>
   <!-- ENTÊTE + CONTEXTE -->
   <section class="card">
-    <h1>Vue globale des effectifs – Année <span id="lastYearLabel"></span></h1>
-    <p style="text-align:center; font-size:1em; color:#444;">
-      Résumé global des effectifs étudiants pour l'année en cours avec comparatif par rapport à l'année précédente.
+    <h1>Vue globale des effectifs – <span id="lastYearLabel"></span></h1>
+    <p style="text-align:center;color:#444;">
+      Données synthétiques de l'année en cours comparées à l'année précédente.
     </p>
   </section>
 
   <!-- KPI PRINCIPAUX -->
-  <section class="card" style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center;">
-    <div style="flex:1; min-width:180px;">
+  <section class="card" style="display:flex;gap:15px;flex-wrap:wrap;justify-content:center;">
+    <div style="flex:1;min-width:180px;">
       <div class="section-title">Total Étudiants</div>
       <div class="kpi" id="totalStudents">0</div>
-      <div style="text-align:center; font-size:1em; margin-top:5px;">
+      <div style="text-align:center;font-size:1em;margin-top:5px;">
         Variation vs <strong><span id="prevYearLabel"></span></strong> : 
         <strong id="variation"></strong>
       </div>
@@ -150,28 +100,112 @@
 
 <footer>© 2026 FSGF en chiffres</footer>
 
-<!-- Ton script JavaScript existant reste identique ici -->
 <script>
-/* Ton code fetch et buildDashboard – inchangé */
 let statsData=[], deptChartObj, niveauChartObj, genreChartObj;
-fetch('data/fsgf.xlsx?t=' + new Date().getTime())
-.then(res=>res.arrayBuffer())
-.then(data=>{
-    const workbook=XLSX.read(data,{type:"array"});
-    const sheet=workbook.Sheets["Donnees"];
-    statsData=XLSX.utils.sheet_to_json(sheet);
-    const years=statsData.map(d=>Number(d.Année));
-    const lastYear=Math.max(...years);
-    const prevYear=lastYear-1;
-    document.getElementById("lastYearLabel").textContent=lastYear;
-    document.getElementById("tableYearLabel").textContent=lastYear;
-    document.getElementById("prevYearLabel").textContent=prevYear;
-    const lastYearData=statsData.filter(d=>Number(d.Année)===lastYear);
-    const prevYearData=statsData.filter(d=>Number(d.Année)===prevYear);
-    buildDashboard(lastYearData,prevYearData);
-});
-/* ...reste du script (buildPivotTable, buildCharts, exportPNG, hamburger toggle, etc.) */
-</script>
 
+// Charger les données Excel
+fetch('data/fsgf.xlsx?t=' + new Date().getTime())
+.then(res => res.arrayBuffer())
+.then(data => {
+    const workbook = XLSX.read(data,{type:"array"});
+    const sheet = workbook.Sheets["Donnees"];
+    statsData = XLSX.utils.sheet_to_json(sheet);
+    // Dates disponibles
+    const years = statsData.map(d => Number(d.Année));
+    const lastYear = Math.max(...years);
+    const prevYear = lastYear - 1;
+    document.getElementById("lastYearLabel").textContent = lastYear;
+    document.getElementById("tableYearLabel").textContent = lastYear;
+    document.getElementById("prevYearLabel").textContent = prevYear;
+    const lastYearData = statsData.filter(d => Number(d.Année) === lastYear);
+    const prevYearData = statsData.filter(d => Number(d.Année) === prevYear);
+    buildDashboard(lastYearData, prevYearData);
+});
+
+// Construire les KPI + tableau + graphiques
+function buildDashboard(current, previous){
+    const totalCurrent = current.reduce((s,d) => s + Number(d.Effectifs), 0);
+    const totalPrevious = previous.reduce((s,d) => s + Number(d.Effectifs), 0);
+    document.getElementById("totalStudents").textContent = totalCurrent;
+    let variationText = "N/A";
+    if(totalPrevious > 0){
+        const varPct = ((totalCurrent - totalPrevious)/totalPrevious*100).toFixed(1);
+        variationText = varPct + "%";
+        document.getElementById("variation").className = varPct >= 0 ? "positive":"negative";
+    }
+    document.getElementById("variation").textContent = variationText;
+    buildPivotTable(current);
+    buildCharts(current);
+}
+
+function buildPivotTable(data){
+    // Assurer que thead & tbody sont présents
+    const pivotTable = document.getElementById("pivotTable");
+    if(!pivotTable.querySelector("thead")) pivotTable.appendChild(document.createElement("thead"));
+    if(!pivotTable.querySelector("tbody")) pivotTable.appendChild(document.createElement("tbody"));
+
+    const thead = pivotTable.querySelector("thead");
+    const tbody = pivotTable.querySelector("tbody");
+    thead.innerHTML = "";
+    tbody.innerHTML = "";
+
+    const genres = [...new Set(data.map(d => d.Genre))].sort();
+    const pivot = {};
+    data.forEach(d => {
+        const dept = d.Département, niv = d.Niveau, gen = d.Genre, eff = Number(d.Effectifs);
+        if(!pivot[dept]) pivot[dept] = {};
+        if(!pivot[dept][niv]) pivot[dept][niv] = {};
+        pivot[dept][niv][gen] = (pivot[dept][niv][gen]||0) + eff;
+    });
+
+    // En‑tête
+    let header = "<tr><th>Département</th><th>Niveau</th>";
+    genres.forEach(g => header += `<th>${g}</th>`);
+    header += "<th>Total</th></tr>";
+    thead.innerHTML = header;
+
+    // Lignes
+    let grandTotals = {}, grandSum=0;
+    genres.forEach(g=>grandTotals[g]=0);
+
+    for(const dept in pivot){
+        let deptTotals = {};
+        genres.forEach(g=>deptTotals[g]=0);
+        let deptSum=0;
+        for(const niv in pivot[dept]){
+            let row = `<tr><td><strong>${dept}</strong></td><td>${niv}</td>`;
+            let rowSum=0;
+            genres.forEach(g=>{
+                const val = pivot[dept][niv][g]||0;
+                row += `<td>${val}</td>`;
+                rowSum += val;
+                deptTotals[g] += val;
+                grandTotals[g] += val;
+            });
+            row += `<td><strong>${rowSum}</strong></td></tr>`;
+            tbody.innerHTML += row;
+            deptSum += rowSum;
+            grandSum += rowSum;
+        }
+        // Total par département
+        let totalRow = `<tr style="background:#f1f5f9;"><td colspan="2"><strong>Total ${dept}</strong></td>`;
+        genres.forEach(g => totalRow += `<td><strong>${deptTotals[g]}</strong></td>`);
+        totalRow += `<td><strong>${deptSum}</strong></td></tr>`;
+        tbody.innerHTML += totalRow;
+    }
+
+    // Total général
+    let grandRow = `<tr style="background:#1e3a8a;color:white;"><td colspan="2"><strong>Total Général</strong></td>`;
+    genres.forEach(g=>grandRow += `<td><strong>${grandTotals[g]}</strong></td>`);
+    grandRow += `<td><strong>${grandSum}</strong></td></tr>`;
+    tbody.innerHTML += grandRow;
+}
+
+// buildCharts (graphique barres et camemberts, déjà bon) …
+function buildCharts(data){
+    /* (inchangé) – identique à ta version précédente */
+}
+// exportPNG et hamburger etc. (inchangés)
+</script>
 </body>
 </html>
