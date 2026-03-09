@@ -2,7 +2,6 @@
 <html lang="fr">
 <head>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ff6b00">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>FSGF en chiffres - Vue globale</title>
@@ -16,19 +15,19 @@
     <style>
         body{font-family:Arial,sans-serif;background:#f4f6f9;margin:0;color:#0f172a;}
         .topbar{display:flex;justify-content:space-between;align-items:center;padding:15px 20px;background:#ff6b00;color:white;}
-        .menu a{color:white;text-decoration:none;margin-left:15px;font-weight:500;}
+        nav a{color:white;text-decoration:none;margin-left:15px;font-weight:500;}
         h1,h2{text-align:center;}
         .card{background:white;border-radius:12px;padding:15px;box-shadow:0 6px 18px rgba(0,0,0,0.08);margin-bottom:20px;}
         table{width:100%;border-collapse:collapse;margin-top:10px;background:white;}
         th,td{border:1px solid #ddd;padding:6px;text-align:center;}
         th{background:#e2e8f0;}
         .charts{display:flex;flex-wrap:wrap;gap:20px;}
-        .chart-box{flex:1;min-width:280px;background:white;padding:10px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.08);}
+        .chart-box{flex:1;min-width:300px;background:white;padding:10px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.08);}
         .btn{background:#ff7f0e;color:white;border:none;border-radius:6px;padding:8px;width:100%;margin-top:8px;cursor:pointer;font-weight:bold;}
         .btn:hover{background:#ff9500;}
         .kpi{font-size:2.2em;font-weight:bold;text-align:center;margin:10px 0;}
-        .section-title{font-size:1.3em;color:#1e293b;margin-bottom:10px;}
-        .description{font-size:0.95em;color:#555;text-align:center;margin-bottom:10px;}
+        .section-title{font-size:1.3em;color:#1e293b;margin-bottom:8px;}
+        .description{font-size:0.95em;color:#555;text-align:center;margin-bottom:6px;}
         footer{text-align:center;padding:10px;background:#000;color:white;}
     </style>
 </head>
@@ -36,47 +35,44 @@
 
 <header class="topbar">
     <div class="logo">FSGF en chiffres</div>
-    <nav class="navbar">
-        <div id="hamburger" class="hamburger"><span></span><span></span><span></span></div>
-        <ul id="nav-links" class="nav-links">
-            <li><a href="index.html">Accueil</a></li>
-            <li><a href="statistiques.html">Statistiques</a></li>
-            <li><a href="comparaisons.html">Comparaisons</a></li>
-            <li><a href="admin.html">Admin</a></li>
-        </ul>
+    <nav>
+        <a href="index.html">Accueil</a>
+        <a href="statistiques.html">Statistiques</a>
+        <a href="comparaisons.html">Comparaisons</a>
+        <a href="admin.html">Admin</a>
     </nav>
 </header>
 
 <main>
 
-  <!-- TITRE + RESUME CONTEXTE -->
+  <!-- TITRE + CONTEXTE GLOBAL -->
   <section class="card">
     <h1>Vue globale des effectifs – <span id="lastYearLabel"></span></h1>
     <p class="description">
-      Ce tableau de bord présente les effectifs étudiants pour l’année en cours, avec une comparaison aux effectifs de l’année précédente
-      et des visualisations claires par département, niveau et genre. :contentReference[oaicite:1]{index=1}
+      Ce tableau de bord présente les effectifs étudiants de l’année en cours, comparés à l’année précédente.
+      Il s’agit des données générales par département, niveau et genre pour une compréhension rapide de la situation. :contentReference[oaicite:5]{index=5}
     </p>
   </section>
 
   <!-- KPI PRINCIPAUX -->
-  <section class="card" style="display:flex;gap:15px;flex-wrap:wrap;justify-content:center;">
-    <div style="flex:1;min-width:180px;">
+  <section class="card" style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">
+    <div style="flex:1;min-width:200px;">
       <div class="section-title">Total des étudiants</div>
       <div class="kpi" id="totalStudents">0</div>
       <p class="description">
         Nombre total d’étudiants inscrits cette année.
       </p>
       <p class="description">
-        Variation vs année précédente : <strong id="variation"></strong>.
+        Variation vs <strong><span id="prevYearLabel"></span></strong> : <strong id="variation"></strong>
       </p>
     </div>
   </section>
 
-  <!-- TABLEAU CROISÉ DÉTAILLÉ -->
+  <!-- TABLEAU CROISÉ DYNAMIQUE -->
   <section class="card">
     <h2>Effectifs par Département & Niveau</h2>
     <p class="description">
-      Tableau croisé des effectifs par département et par niveau. Cliquez sur les en-têtes pour naviguer.
+      Tableau des effectifs regroupés par département et par niveau d’études. :contentReference[oaicite:6]{index=6}
     </p>
     <table id="pivotTable">
       <thead></thead>
@@ -88,27 +84,27 @@
   <section class="charts">
 
     <div class="chart-box">
-      <div class="section-title">Répartition des effectifs par département</div>
+      <div class="section-title">Effectifs par Département</div>
       <p class="description">
-        Ce graphique montre combien d’étudiants sont inscrits dans chaque département. :contentReference[oaicite:2]{index=2}
+        Ce graphique montre combien d’étudiants sont présents dans chaque département, permettant de comparer les effectifs par section. :contentReference[oaicite:7]{index=7}
       </p>
       <canvas id="deptChart"></canvas>
       <button class="btn" onclick="exportPNG('deptChart')">Exporter PNG</button>
     </div>
 
     <div class="chart-box">
-      <div class="section-title">Répartition des effectifs par niveau</div>
+      <div class="section-title">Répartition par Niveau</div>
       <p class="description">
-        Graphe circulaire représentant le pourcentage d’étudiants dans chaque niveau d’étude. :contentReference[oaicite:3]{index=3}
+        Camembert représentant la répartition des effectifs selon le niveau d’études. :contentReference[oaicite:8]{index=8}
       </p>
       <canvas id="niveauChart"></canvas>
       <button class="btn" onclick="exportPNG('niveauChart')">Exporter PNG</button>
     </div>
 
     <div class="chart-box">
-      <div class="section-title">Répartition des effectifs par genre</div>
+      <div class="section-title">Répartition par Genre</div>
       <p class="description">
-        Gravure circulaire représentant la répartition entre étudiants masculins et féminins. :contentReference[oaicite:4]{index=4}
+        Camembert illustrant la proportion d’étudiants masculins et féminins. :contentReference[oaicite:9]{index=9}
       </p>
       <canvas id="genreChart"></canvas>
       <button class="btn" onclick="exportPNG('genreChart')">Exporter PNG</button>
@@ -122,12 +118,13 @@
 <script>
 let statsData=[], deptChartObj, niveauChartObj, genreChartObj;
 
-// Lecture des données Excel
+// Lecture des données Excel (.xlsx)
 fetch('data/fsgf.xlsx?t=' + new Date().getTime())
-.then(res=>res.arrayBuffer())
-.then(data=>{
-    const workbook = XLSX.read(data,{type:"array"});
-    const sheet = workbook.Sheets["Donnees"];
+.then(res => res.arrayBuffer())
+.then(data => {
+    const workbook = XLSX.read(data, {type:"array"});
+    const sheetNames = workbook.SheetNames;
+    const sheet = workbook.Sheets[sheetNames[0]]; // première feuille
     statsData = XLSX.utils.sheet_to_json(sheet);
 
     const years = statsData.map(d=>Number(d.Année));
@@ -136,7 +133,6 @@ fetch('data/fsgf.xlsx?t=' + new Date().getTime())
 
     document.getElementById("lastYearLabel").textContent = lastYear;
     document.getElementById("prevYearLabel").textContent = prevYear;
-    document.getElementById("tableYearLabel").textContent = lastYear;
 
     const lastYearData = statsData.filter(d => Number(d.Année) === lastYear);
     const prevYearData = statsData.filter(d => Number(d.Année) === prevYear);
@@ -144,14 +140,15 @@ fetch('data/fsgf.xlsx?t=' + new Date().getTime())
     buildDashboard(lastYearData, prevYearData);
 });
 
+// Construire les KPI + tableau + graphiques
 function buildDashboard(current, previous){
-    const totalCurrent = current.reduce((s,d)=>s+Number(d.Effectifs),0);
-    const totalPrev = previous.reduce((s,d)=>s+Number(d.Effectifs),0);
+    const totalCurrent = current.reduce((sum,d)=>sum+Number(d.Effectifs),0);
+    const totalPrev = previous.reduce((sum,d)=>sum+Number(d.Effectifs),0);
 
     document.getElementById("totalStudents").textContent = totalCurrent;
 
     let variationText = "N/A";
-    if(totalPrev>0){
+    if(totalPrev > 0){
         const pct = ((totalCurrent - totalPrev)/totalPrev*100).toFixed(1);
         variationText = pct + "%";
         document.getElementById("variation").className = pct>=0?"positive":"negative";
@@ -174,7 +171,7 @@ function buildPivotTable(data){
 
     const genres = [...new Set(data.map(d=>d.Genre))].sort();
     const pivot = {};
-    data.forEach(d=>{
+    data.forEach(d => {
         const dept=d.Département, niv=d.Niveau, gen=d.Genre, eff=Number(d.Effectifs);
         if(!pivot[dept]) pivot[dept]={};
         if(!pivot[dept][niv]) pivot[dept][niv]={};
@@ -182,7 +179,7 @@ function buildPivotTable(data){
     });
 
     let header = "<tr><th>Département</th><th>Niveau</th>";
-    genres.forEach(g=>header+="<th>"+g+"</th>");
+    genres.forEach(g=>header+=`<th>${g}</th>`);
     header+="<th>Total</th></tr>";
     thead.innerHTML=header;
 
@@ -192,36 +189,38 @@ function buildPivotTable(data){
     for(const dept in pivot){
         let deptTotals={}, deptSum=0;
         genres.forEach(g=>deptTotals[g]=0);
-
         for(const niv in pivot[dept]){
-            let row="<tr><td><strong>"+dept+"</strong></td><td>"+niv+"</td>";
+            let row=`<tr><td><strong>${dept}</strong></td><td>${niv}</td>`;
             let rowSum=0;
             genres.forEach(g=>{
-                const val=pivot[dept][niv][g]||0;
-                row+="<td>"+val+"</td>";
-                rowSum+=val;
-                deptTotals[g]+=val;
-                grandTotals[g]+=val;
+                const val = pivot[dept][niv][g]||0;
+                row+=`<td>${val}</td>`;
+                rowSum+=val; deptTotals[g]+=val; grandTotals[g]+=val;
             });
-            row+="<td><strong>"+rowSum+"</strong></td></tr>";
-            tbody.innerHTML+=row;
-            deptSum+=rowSum;
-            grandSum+=rowSum;
+            row+=`<td><strong>${rowSum}</strong></td></tr>`;
+            tbody.innerHTML+=row; deptSum+=rowSum; grandSum+=rowSum;
         }
-        let totalRow="<tr style='background:#f1f5f9;'><td colspan='2'><strong>Total "+dept+"</strong></td>";
-        genres.forEach(g=>totalRow+="<td><strong>"+deptTotals[g]+"</strong></td>");
-        totalRow+="<td><strong>"+deptSum+"</strong></td></tr>";
+        let totalRow=`<tr style="background:#f1f5f9;"><td colspan="2"><strong>Total ${dept}</strong></td>`;
+        genres.forEach(g=>totalRow+=`<td><strong>${deptTotals[g]}</strong></td>`);
+        totalRow+=`<td><strong>${deptSum}</strong></td></tr>`;
         tbody.innerHTML+=totalRow;
     }
-
-    let grandRow="<tr style='background:#1e3a8a;color:white;'><td colspan='2'><strong>Total Général</strong></td>";
-    genres.forEach(g=>grandRow+="<td><strong>"+grandTotals[g]+"</strong></td>");
-    grandRow+="<td><strong>"+grandSum+"</strong></td></tr>";
+    let grandRow=`<tr style="background:#1e3a8a;color:white;"><td colspan="2"><strong>Total Général</strong></td>`;
+    genres.forEach(g=>grandRow+=`<td><strong>${grandTotals[g]}</strong></td>`);
+    grandRow+=`<td><strong>${grandSum}</strong></td></tr>`;
     tbody.innerHTML+=grandRow;
 }
 
 function buildCharts(data){
-    /* ton code des graphiques Chart.js reste identique */
+    /* Le code des graphiques restera identique à ta version précédente */
+}
+
+function exportPNG(id){
+    const canvas=document.getElementById(id);
+    const link=document.createElement('a');
+    link.download=id+".png";
+    link.href=canvas.toDataURL();
+    link.click();
 }
 </script>
 
