@@ -32,6 +32,49 @@
         .btn:hover { background:#ff9500; }
         .kpi { font-size:2.2em; font-weight:bold; text-align:center; margin: 10px 0; }
         footer { text-align:center; padding:10px; background:#000; color:white; }
+        /* Hamburger */
+.hamburger {
+  display: none; /* caché par défaut sur grand écran */
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 20px;
+  cursor: pointer;
+  margin-right: 15px;
+}
+
+.hamburger span {
+  height: 3px;
+  background-color: white;
+  border-radius: 2px;
+}
+
+/* Menu navigation */
+.nav-menu {
+  display: flex;
+  gap: 15px;
+}
+
+/* Responsive : afficher hamburger et cacher menu */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+  .nav-menu {
+    display: none;
+    flex-direction: column;
+    background: #ff6b00;
+    width: 100%;
+  }
+  .nav-menu.active {
+    display: flex;
+  }
+  .nav-menu a {
+    padding: 10px;
+    color: white;
+    text-decoration: none;
+  }
+}
     </style>
 </head>
 <body>
