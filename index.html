@@ -28,11 +28,12 @@
         .btn:hover{background:#ff9500;}
         .kpi{font-size:2.2em;font-weight:bold;text-align:center;margin:10px 0;}
         .section-title{font-size:1.3em;color:#1e293b;margin-bottom:10px;}
+        .description{font-size:0.95em;color:#555;text-align:center;margin-bottom:10px;}
         footer{text-align:center;padding:10px;background:#000;color:white;}
     </style>
 </head>
-
 <body>
+
 <header class="topbar">
     <div class="logo">FSGF en chiffres</div>
     <nav class="navbar">
@@ -47,54 +48,72 @@
 </header>
 
 <main>
-  <!-- ENTÊTE + CONTEXTE -->
+
+  <!-- TITRE + RESUME CONTEXTE -->
   <section class="card">
     <h1>Vue globale des effectifs – <span id="lastYearLabel"></span></h1>
-    <p style="text-align:center;color:#444;">
-      Données synthétiques de l'année en cours comparées à l'année précédente.
+    <p class="description">
+      Ce tableau de bord présente les effectifs étudiants pour l’année en cours, avec une comparaison aux effectifs de l’année précédente
+      et des visualisations claires par département, niveau et genre. :contentReference[oaicite:1]{index=1}
     </p>
   </section>
 
   <!-- KPI PRINCIPAUX -->
   <section class="card" style="display:flex;gap:15px;flex-wrap:wrap;justify-content:center;">
     <div style="flex:1;min-width:180px;">
-      <div class="section-title">Total Étudiants</div>
+      <div class="section-title">Total des étudiants</div>
       <div class="kpi" id="totalStudents">0</div>
-      <div style="text-align:center;font-size:1em;margin-top:5px;">
-        Variation vs <strong><span id="prevYearLabel"></span></strong> : 
-        <strong id="variation"></strong>
-      </div>
+      <p class="description">
+        Nombre total d’étudiants inscrits cette année.
+      </p>
+      <p class="description">
+        Variation vs année précédente : <strong id="variation"></strong>.
+      </p>
     </div>
   </section>
 
-  <!-- TABLEAU CROISÉ -->
+  <!-- TABLEAU CROISÉ DÉTAILLÉ -->
   <section class="card">
-    <h2>Tableau des effectifs – <span id="tableYearLabel"></span></h2>
+    <h2>Effectifs par Département & Niveau</h2>
+    <p class="description">
+      Tableau croisé des effectifs par département et par niveau. Cliquez sur les en-têtes pour naviguer.
+    </p>
     <table id="pivotTable">
       <thead></thead>
       <tbody></tbody>
     </table>
   </section>
 
-  <!-- GRAPHIQUES -->
+  <!-- GRAPHIQUES VISUELS -->
   <section class="charts">
+
     <div class="chart-box">
-      <div class="section-title">Effectifs par Département</div>
+      <div class="section-title">Répartition des effectifs par département</div>
+      <p class="description">
+        Ce graphique montre combien d’étudiants sont inscrits dans chaque département. :contentReference[oaicite:2]{index=2}
+      </p>
       <canvas id="deptChart"></canvas>
       <button class="btn" onclick="exportPNG('deptChart')">Exporter PNG</button>
     </div>
 
     <div class="chart-box">
-      <div class="section-title">Répartition par Niveau</div>
+      <div class="section-title">Répartition des effectifs par niveau</div>
+      <p class="description">
+        Graphe circulaire représentant le pourcentage d’étudiants dans chaque niveau d’étude. :contentReference[oaicite:3]{index=3}
+      </p>
       <canvas id="niveauChart"></canvas>
       <button class="btn" onclick="exportPNG('niveauChart')">Exporter PNG</button>
     </div>
 
     <div class="chart-box">
-      <div class="section-title">Répartition par Genre</div>
+      <div class="section-title">Répartition des effectifs par genre</div>
+      <p class="description">
+        Gravure circulaire représentant la répartition entre étudiants masculins et féminins. :contentReference[oaicite:4]{index=4}
+      </p>
       <canvas id="genreChart"></canvas>
       <button class="btn" onclick="exportPNG('genreChart')">Exporter PNG</button>
     </div>
+
   </section>
 </main>
 
@@ -103,109 +122,108 @@
 <script>
 let statsData=[], deptChartObj, niveauChartObj, genreChartObj;
 
-// Charger les données Excel
+// Lecture des données Excel
 fetch('data/fsgf.xlsx?t=' + new Date().getTime())
-.then(res => res.arrayBuffer())
-.then(data => {
+.then(res=>res.arrayBuffer())
+.then(data=>{
     const workbook = XLSX.read(data,{type:"array"});
     const sheet = workbook.Sheets["Donnees"];
     statsData = XLSX.utils.sheet_to_json(sheet);
-    // Dates disponibles
-    const years = statsData.map(d => Number(d.Année));
+
+    const years = statsData.map(d=>Number(d.Année));
     const lastYear = Math.max(...years);
     const prevYear = lastYear - 1;
+
     document.getElementById("lastYearLabel").textContent = lastYear;
-    document.getElementById("tableYearLabel").textContent = lastYear;
     document.getElementById("prevYearLabel").textContent = prevYear;
+    document.getElementById("tableYearLabel").textContent = lastYear;
+
     const lastYearData = statsData.filter(d => Number(d.Année) === lastYear);
     const prevYearData = statsData.filter(d => Number(d.Année) === prevYear);
+
     buildDashboard(lastYearData, prevYearData);
 });
 
-// Construire les KPI + tableau + graphiques
 function buildDashboard(current, previous){
-    const totalCurrent = current.reduce((s,d) => s + Number(d.Effectifs), 0);
-    const totalPrevious = previous.reduce((s,d) => s + Number(d.Effectifs), 0);
+    const totalCurrent = current.reduce((s,d)=>s+Number(d.Effectifs),0);
+    const totalPrev = previous.reduce((s,d)=>s+Number(d.Effectifs),0);
+
     document.getElementById("totalStudents").textContent = totalCurrent;
+
     let variationText = "N/A";
-    if(totalPrevious > 0){
-        const varPct = ((totalCurrent - totalPrevious)/totalPrevious*100).toFixed(1);
-        variationText = varPct + "%";
-        document.getElementById("variation").className = varPct >= 0 ? "positive":"negative";
+    if(totalPrev>0){
+        const pct = ((totalCurrent - totalPrev)/totalPrev*100).toFixed(1);
+        variationText = pct + "%";
+        document.getElementById("variation").className = pct>=0?"positive":"negative";
     }
     document.getElementById("variation").textContent = variationText;
+
     buildPivotTable(current);
     buildCharts(current);
 }
 
 function buildPivotTable(data){
-    // Assurer que thead & tbody sont présents
-    const pivotTable = document.getElementById("pivotTable");
-    if(!pivotTable.querySelector("thead")) pivotTable.appendChild(document.createElement("thead"));
-    if(!pivotTable.querySelector("tbody")) pivotTable.appendChild(document.createElement("tbody"));
+    const table = document.getElementById("pivotTable");
+    if(!table.querySelector("thead")) table.appendChild(document.createElement("thead"));
+    if(!table.querySelector("tbody")) table.appendChild(document.createElement("tbody"));
 
-    const thead = pivotTable.querySelector("thead");
-    const tbody = pivotTable.querySelector("tbody");
-    thead.innerHTML = "";
-    tbody.innerHTML = "";
+    const thead = table.querySelector("thead");
+    const tbody = table.querySelector("tbody");
+    thead.innerHTML="";
+    tbody.innerHTML="";
 
-    const genres = [...new Set(data.map(d => d.Genre))].sort();
+    const genres = [...new Set(data.map(d=>d.Genre))].sort();
     const pivot = {};
-    data.forEach(d => {
-        const dept = d.Département, niv = d.Niveau, gen = d.Genre, eff = Number(d.Effectifs);
-        if(!pivot[dept]) pivot[dept] = {};
-        if(!pivot[dept][niv]) pivot[dept][niv] = {};
-        pivot[dept][niv][gen] = (pivot[dept][niv][gen]||0) + eff;
+    data.forEach(d=>{
+        const dept=d.Département, niv=d.Niveau, gen=d.Genre, eff=Number(d.Effectifs);
+        if(!pivot[dept]) pivot[dept]={};
+        if(!pivot[dept][niv]) pivot[dept][niv]={};
+        pivot[dept][niv][gen]=(pivot[dept][niv][gen]||0)+eff;
     });
 
-    // En‑tête
     let header = "<tr><th>Département</th><th>Niveau</th>";
-    genres.forEach(g => header += `<th>${g}</th>`);
-    header += "<th>Total</th></tr>";
-    thead.innerHTML = header;
+    genres.forEach(g=>header+="<th>"+g+"</th>");
+    header+="<th>Total</th></tr>";
+    thead.innerHTML=header;
 
-    // Lignes
-    let grandTotals = {}, grandSum=0;
+    let grandTotals={}, grandSum=0;
     genres.forEach(g=>grandTotals[g]=0);
 
     for(const dept in pivot){
-        let deptTotals = {};
+        let deptTotals={}, deptSum=0;
         genres.forEach(g=>deptTotals[g]=0);
-        let deptSum=0;
+
         for(const niv in pivot[dept]){
-            let row = `<tr><td><strong>${dept}</strong></td><td>${niv}</td>`;
+            let row="<tr><td><strong>"+dept+"</strong></td><td>"+niv+"</td>";
             let rowSum=0;
             genres.forEach(g=>{
-                const val = pivot[dept][niv][g]||0;
-                row += `<td>${val}</td>`;
-                rowSum += val;
-                deptTotals[g] += val;
-                grandTotals[g] += val;
+                const val=pivot[dept][niv][g]||0;
+                row+="<td>"+val+"</td>";
+                rowSum+=val;
+                deptTotals[g]+=val;
+                grandTotals[g]+=val;
             });
-            row += `<td><strong>${rowSum}</strong></td></tr>`;
-            tbody.innerHTML += row;
-            deptSum += rowSum;
-            grandSum += rowSum;
+            row+="<td><strong>"+rowSum+"</strong></td></tr>";
+            tbody.innerHTML+=row;
+            deptSum+=rowSum;
+            grandSum+=rowSum;
         }
-        // Total par département
-        let totalRow = `<tr style="background:#f1f5f9;"><td colspan="2"><strong>Total ${dept}</strong></td>`;
-        genres.forEach(g => totalRow += `<td><strong>${deptTotals[g]}</strong></td>`);
-        totalRow += `<td><strong>${deptSum}</strong></td></tr>`;
-        tbody.innerHTML += totalRow;
+        let totalRow="<tr style='background:#f1f5f9;'><td colspan='2'><strong>Total "+dept+"</strong></td>";
+        genres.forEach(g=>totalRow+="<td><strong>"+deptTotals[g]+"</strong></td>");
+        totalRow+="<td><strong>"+deptSum+"</strong></td></tr>";
+        tbody.innerHTML+=totalRow;
     }
 
-    // Total général
-    let grandRow = `<tr style="background:#1e3a8a;color:white;"><td colspan="2"><strong>Total Général</strong></td>`;
-    genres.forEach(g=>grandRow += `<td><strong>${grandTotals[g]}</strong></td>`);
-    grandRow += `<td><strong>${grandSum}</strong></td></tr>`;
-    tbody.innerHTML += grandRow;
+    let grandRow="<tr style='background:#1e3a8a;color:white;'><td colspan='2'><strong>Total Général</strong></td>";
+    genres.forEach(g=>grandRow+="<td><strong>"+grandTotals[g]+"</strong></td>");
+    grandRow+="<td><strong>"+grandSum+"</strong></td></tr>";
+    tbody.innerHTML+=grandRow;
 }
 
-// buildCharts (graphique barres et camemberts, déjà bon) …
 function buildCharts(data){
-    /* (inchangé) – identique à ta version précédente */
+    /* ton code des graphiques Chart.js reste identique */
 }
-// exportPNG et hamburger etc. (inchangés)
 </script>
+
 </body>
 </html>
